@@ -1,0 +1,904 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>LABRIOLAGAMES — Portfólio</title>
+<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=DM+Sans:wght@300;400;500&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
+<style>
+:root {
+  --black: #080A0E;
+  --white: #F0EDE6;
+  --gold: #D4AF37;
+  --gold-dim: #8A7020;
+  --red: #FF3B5C;
+  --cyan: #00E5FF;
+  --green: #38EF7D;
+  --surface: #10141A;
+  --border: rgba(212,175,55,0.2);
+}
+
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+html { scroll-behavior: smooth; }
+
+body {
+  background: var(--black);
+  color: var(--white);
+  font-family: 'DM Sans', sans-serif;
+  overflow-x: hidden;
+  cursor: none;
+}
+
+/* ── CURSOR ── */
+#cursor {
+  position: fixed; width: 10px; height: 10px;
+  background: var(--gold); border-radius: 50%;
+  pointer-events: none; z-index: 9999;
+  transform: translate(-50%, -50%);
+  transition: width 0.2s, height 0.2s, background 0.2s;
+  mix-blend-mode: difference;
+}
+#cursor-ring {
+  position: fixed; width: 36px; height: 36px;
+  border: 1.5px solid var(--gold); border-radius: 50%;
+  pointer-events: none; z-index: 9998;
+  transform: translate(-50%, -50%);
+  transition: all 0.12s ease-out;
+  opacity: 0.6;
+}
+
+/* ── NOISE OVERLAY ── */
+body::before {
+  content: '';
+  position: fixed; inset: 0;
+  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)' opacity='0.04'/%3E%3C/svg%3E");
+  pointer-events: none; z-index: 1; opacity: 0.3;
+}
+
+/* ── HERO ── */
+#hero {
+  position: relative; min-height: 100vh;
+  display: flex; flex-direction: column;
+  justify-content: center; align-items: flex-start;
+  padding: 8vw 10vw;
+  overflow: hidden;
+}
+
+.hero-bg-grid {
+  position: absolute; inset: 0;
+  background-image:
+    linear-gradient(rgba(212,175,55,0.05) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(212,175,55,0.05) 1px, transparent 1px);
+  background-size: 60px 60px;
+  animation: gridDrift 30s linear infinite;
+}
+@keyframes gridDrift { from { transform: translateY(0); } to { transform: translateY(60px); } }
+
+.hero-glow {
+  position: absolute; width: 600px; height: 600px;
+  border-radius: 50%;
+  background: radial-gradient(circle, rgba(212,175,55,0.08) 0%, transparent 70%);
+  right: -100px; top: -100px; pointer-events: none;
+  animation: pulse 6s ease-in-out infinite;
+}
+@keyframes pulse { 0%,100% { transform: scale(1); opacity:0.6; } 50% { transform: scale(1.15); opacity:1; } }
+
+.eyebrow {
+  font-family: 'Space Mono', monospace;
+  font-size: clamp(10px, 1.2vw, 13px);
+  letter-spacing: 0.3em;
+  color: var(--gold);
+  text-transform: uppercase;
+  margin-bottom: 24px;
+  display: flex; align-items: center; gap: 16px;
+}
+.eyebrow::before {
+  content: ''; display: block; width: 40px; height: 1px; background: var(--gold);
+}
+
+.hero-title {
+  font-family: 'Bebas Neue', sans-serif;
+  font-size: clamp(64px, 12vw, 160px);
+  line-height: 0.9;
+  letter-spacing: -0.02em;
+  color: var(--white);
+  position: relative;
+}
+.hero-title .accent { color: var(--gold); }
+.hero-title .outline {
+  -webkit-text-stroke: 1px var(--gold-dim);
+  color: transparent;
+}
+
+.hero-subtitle {
+  font-size: clamp(16px, 1.8vw, 22px);
+  font-weight: 300;
+  color: rgba(240,237,230,0.6);
+  max-width: 520px;
+  margin-top: 28px;
+  line-height: 1.7;
+}
+
+.hero-cta {
+  display: flex; gap: 16px; margin-top: 48px; flex-wrap: wrap;
+}
+.btn-primary {
+  padding: 16px 36px;
+  background: var(--gold);
+  color: var(--black);
+  font-family: 'Space Mono', monospace;
+  font-size: 13px; font-weight: 700;
+  letter-spacing: 0.1em; text-transform: uppercase;
+  border: none; cursor: none; text-decoration: none;
+  display: inline-block;
+  clip-path: polygon(0 0, calc(100% - 12px) 0, 100% 12px, 100% 100%, 12px 100%, 0 calc(100% - 12px));
+  transition: transform 0.2s, box-shadow 0.2s;
+}
+.btn-primary:hover { transform: translateY(-2px); box-shadow: 0 12px 40px rgba(212,175,55,0.3); }
+
+.btn-secondary {
+  padding: 16px 36px;
+  background: transparent;
+  color: var(--white);
+  font-family: 'Space Mono', monospace;
+  font-size: 13px; font-weight: 700;
+  letter-spacing: 0.1em; text-transform: uppercase;
+  border: 1px solid rgba(240,237,230,0.3);
+  cursor: none; text-decoration: none; display: inline-block;
+  transition: border-color 0.2s, color 0.2s;
+}
+.btn-secondary:hover { border-color: var(--gold); color: var(--gold); }
+
+.hero-stats {
+  position: absolute; right: 8vw; bottom: 8vh;
+  display: flex; gap: 48px;
+}
+.stat-item { text-align: center; }
+.stat-num {
+  font-family: 'Bebas Neue', sans-serif;
+  font-size: 48px; color: var(--gold); line-height: 1;
+}
+.stat-label {
+  font-family: 'Space Mono', monospace;
+  font-size: 10px; letter-spacing: 0.2em;
+  color: rgba(240,237,230,0.4); text-transform: uppercase;
+  margin-top: 4px;
+}
+
+/* ── SCROLLING MARQUEE ── */
+.marquee-wrap {
+  overflow: hidden; border-top: 1px solid var(--border); border-bottom: 1px solid var(--border);
+  background: var(--surface); padding: 14px 0;
+}
+.marquee-track {
+  display: flex; gap: 0; white-space: nowrap;
+  animation: marquee 20s linear infinite;
+}
+@keyframes marquee { from { transform: translateX(0); } to { transform: translateX(-50%); } }
+.marquee-item {
+  font-family: 'Bebas Neue', sans-serif;
+  font-size: 14px; letter-spacing: 0.25em;
+  color: rgba(212,175,55,0.5); padding: 0 40px;
+  text-transform: uppercase;
+}
+.marquee-dot { color: var(--gold); padding: 0 8px; }
+
+/* ── SECTION COMMON ── */
+section { position: relative; z-index: 2; }
+
+.section-label {
+  font-family: 'Space Mono', monospace;
+  font-size: 11px; letter-spacing: 0.35em; text-transform: uppercase;
+  color: var(--gold); margin-bottom: 16px;
+  display: flex; align-items: center; gap: 12px;
+}
+.section-label::after {
+  content: ''; flex: 1; height: 1px;
+  background: linear-gradient(90deg, var(--gold-dim), transparent);
+  max-width: 120px;
+}
+
+.section-title {
+  font-family: 'Bebas Neue', sans-serif;
+  font-size: clamp(40px, 6vw, 80px);
+  line-height: 1; letter-spacing: -0.01em;
+  color: var(--white);
+}
+
+/* ── GAMES GRID ── */
+#games {
+  padding: 120px 8vw;
+}
+.games-header { margin-bottom: 60px; }
+
+.games-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+  gap: 2px;
+}
+
+.game-card {
+  position: relative;
+  background: var(--surface);
+  overflow: hidden;
+  cursor: none;
+  aspect-ratio: 4/3;
+  border: 1px solid var(--border);
+  transition: border-color 0.3s;
+}
+.game-card:hover { border-color: var(--gold); }
+
+.game-card-inner {
+  position: absolute; inset: 0;
+  display: flex; flex-direction: column;
+  justify-content: flex-end; padding: 28px;
+}
+
+/* Preview visual de cada jogo */
+.game-preview {
+  position: absolute; inset: 0;
+  display: flex; justify-content: center; align-items: center;
+  font-size: 72px; opacity: 0.12;
+  transition: opacity 0.4s, transform 0.4s;
+}
+.game-card:hover .game-preview { opacity: 0.22; transform: scale(1.08); }
+
+.game-preview-art {
+  position: absolute; inset: 0;
+  transition: transform 0.4s;
+}
+.game-card:hover .game-preview-art { transform: scale(1.04); }
+
+/* Cores de cada card */
+.card-moto   { background: linear-gradient(135deg, #080A0E 40%, #0A0D12); }
+.card-slot   { background: linear-gradient(135deg, #0A0800 40%, #1b1b2f); }
+.card-bomb   { background: linear-gradient(135deg, #0A0A0E 40%, #111122); }
+.card-map    { background: linear-gradient(135deg, #060E08 40%, #0A1A0E); }
+.card-scratch { background: linear-gradient(135deg, #0E0A08 40%, #1a1008); }
+
+.game-tag {
+  font-family: 'Space Mono', monospace;
+  font-size: 10px; letter-spacing: 0.2em; text-transform: uppercase;
+  padding: 5px 12px; border: 1px solid;
+  display: inline-block; margin-bottom: 12px; width: fit-content;
+}
+.tag-action { color: var(--red); border-color: var(--red); }
+.tag-casino { color: var(--gold); border-color: var(--gold); }
+.tag-arcade { color: var(--cyan); border-color: var(--cyan); }
+.tag-rpg    { color: var(--green); border-color: var(--green); }
+.tag-scratch { color: #FF9500; border-color: #FF9500; }
+
+.game-name {
+  font-family: 'Bebas Neue', sans-serif;
+  font-size: 32px; letter-spacing: 0.02em;
+  color: var(--white); line-height: 1;
+  margin-bottom: 8px;
+}
+.game-desc {
+  font-size: 13px; font-weight: 300;
+  color: rgba(240,237,230,0.5); line-height: 1.5;
+  margin-bottom: 20px;
+}
+
+.game-play-btn {
+  display: inline-flex; align-items: center; gap: 10px;
+  font-family: 'Space Mono', monospace;
+  font-size: 11px; letter-spacing: 0.2em; text-transform: uppercase;
+  color: var(--gold); text-decoration: none;
+  transition: gap 0.2s;
+  cursor: none;
+}
+.game-play-btn::after { content: '→'; transition: transform 0.2s; }
+.game-card:hover .game-play-btn { gap: 16px; }
+.game-card:hover .game-play-btn::after { transform: translateX(4px); }
+
+.game-overlay {
+  position: absolute; inset: 0;
+  background: rgba(212,175,55,0.04);
+  opacity: 0; transition: opacity 0.3s;
+}
+.game-card:hover .game-overlay { opacity: 1; }
+
+/* ── WHITE LABEL SECTION ── */
+#whitelabel {
+  padding: 120px 8vw;
+  background: var(--surface);
+  border-top: 1px solid var(--border);
+  border-bottom: 1px solid var(--border);
+}
+
+.wl-layout {
+  display: grid; grid-template-columns: 1fr 1fr;
+  gap: 80px; align-items: center;
+  margin-top: 60px;
+}
+
+@media (max-width: 900px) { .wl-layout { grid-template-columns: 1fr; gap: 48px; } }
+
+.wl-text { }
+.wl-text p {
+  font-size: 18px; font-weight: 300; line-height: 1.8;
+  color: rgba(240,237,230,0.65);
+  margin-bottom: 24px;
+}
+.wl-text p strong { color: var(--white); font-weight: 500; }
+
+.wl-bullets { margin-top: 32px; display: flex; flex-direction: column; gap: 16px; }
+.wl-bullet {
+  display: flex; align-items: flex-start; gap: 16px;
+  padding: 16px 20px;
+  border: 1px solid var(--border);
+  background: rgba(212,175,55,0.03);
+  transition: border-color 0.2s, background 0.2s;
+}
+.wl-bullet:hover { border-color: var(--gold); background: rgba(212,175,55,0.06); }
+.wl-bullet-icon {
+  font-size: 20px; flex-shrink: 0; margin-top: 2px;
+}
+.wl-bullet-text strong {
+  display: block; font-family: 'Space Mono', monospace;
+  font-size: 12px; letter-spacing: 0.1em; text-transform: uppercase;
+  color: var(--gold); margin-bottom: 4px;
+}
+.wl-bullet-text span {
+  font-size: 14px; color: rgba(240,237,230,0.55); line-height: 1.5;
+}
+
+/* MOCKUP WHITE LABEL */
+.wl-mockup {
+  position: relative;
+}
+.brand-switcher {
+  background: #0D1117;
+  border: 1px solid var(--border);
+  border-radius: 4px;
+  overflow: hidden;
+}
+.brand-switcher-header {
+  background: rgba(212,175,55,0.07);
+  border-bottom: 1px solid var(--border);
+  padding: 12px 20px;
+  font-family: 'Space Mono', monospace;
+  font-size: 11px; letter-spacing: 0.2em; text-transform: uppercase;
+  color: var(--gold-dim);
+  display: flex; align-items: center; gap: 8px;
+}
+.dot { width: 8px; height: 8px; border-radius: 50%; }
+.dot-r { background: #FF5F57; }
+.dot-y { background: #FEBC2E; }
+.dot-g { background: #28C840; }
+
+.brand-examples {
+  display: grid; grid-template-columns: 1fr 1fr;
+  gap: 1px; background: var(--border);
+}
+.brand-ex {
+  padding: 24px 20px;
+  display: flex; flex-direction: column; align-items: center; gap: 12px;
+  cursor: none; transition: background 0.2s;
+  background: #0D1117;
+}
+.brand-ex:hover { background: rgba(212,175,55,0.05); }
+.brand-badge {
+  width: 60px; height: 60px; border-radius: 12px;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 26px;
+}
+.brand-name-mock {
+  font-family: 'Bebas Neue', sans-serif;
+  font-size: 14px; letter-spacing: 0.1em;
+  text-align: center; color: rgba(240,237,230,0.7);
+}
+.brand-tag-mock {
+  font-family: 'Space Mono', monospace;
+  font-size: 9px; letter-spacing: 0.2em; text-transform: uppercase;
+  color: rgba(240,237,230,0.3);
+  text-align: center;
+}
+
+.wl-cta-box {
+  background: rgba(212,175,55,0.07);
+  border: 1px solid var(--border);
+  padding: 24px;
+  margin-top: 1px;
+  display: flex; align-items: center; justify-content: space-between;
+  gap: 16px;
+}
+.wl-cta-box span {
+  font-size: 14px; color: rgba(240,237,230,0.6);
+}
+.wl-cta-box a {
+  font-family: 'Space Mono', monospace; font-size: 11px;
+  letter-spacing: 0.15em; text-transform: uppercase;
+  color: var(--gold); text-decoration: none; white-space: nowrap;
+}
+
+/* ── HOW IT WORKS ── */
+#como {
+  padding: 120px 8vw;
+}
+.steps {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+  gap: 2px; margin-top: 60px;
+}
+.step {
+  padding: 32px 28px;
+  border: 1px solid var(--border);
+  background: var(--surface);
+  position: relative;
+  transition: border-color 0.3s;
+}
+.step:hover { border-color: var(--gold); }
+.step-num {
+  font-family: 'Bebas Neue', sans-serif;
+  font-size: 72px; line-height: 1;
+  color: rgba(212,175,55,0.12);
+  position: absolute; top: 16px; right: 20px;
+}
+.step-icon { font-size: 28px; margin-bottom: 16px; }
+.step-title {
+  font-family: 'Space Mono', monospace;
+  font-size: 12px; letter-spacing: 0.12em; text-transform: uppercase;
+  color: var(--white); margin-bottom: 10px;
+}
+.step-text { font-size: 14px; color: rgba(240,237,230,0.5); line-height: 1.6; }
+
+/* ── CONTATO ── */
+#contato {
+  padding: 120px 8vw;
+  background: var(--surface);
+  border-top: 1px solid var(--border);
+  text-align: center;
+}
+.contact-inner { max-width: 640px; margin: 0 auto; }
+.contact-inner .section-title { margin-bottom: 20px; }
+.contact-inner p {
+  font-size: 17px; font-weight: 300;
+  color: rgba(240,237,230,0.55); line-height: 1.8;
+  margin-bottom: 48px;
+}
+.contact-btns { display: flex; gap: 16px; justify-content: center; flex-wrap: wrap; }
+
+/* ── NAV ── */
+nav {
+  position: fixed; top: 0; left: 0; right: 0;
+  z-index: 500;
+  display: flex; justify-content: space-between; align-items: center;
+  padding: 20px 8vw;
+  background: rgba(8,10,14,0.85);
+  backdrop-filter: blur(12px);
+  border-bottom: 1px solid var(--border);
+}
+.nav-logo {
+  font-family: 'Bebas Neue', sans-serif;
+  font-size: 22px; letter-spacing: 0.12em;
+  color: var(--white);
+}
+.nav-logo span { color: var(--gold); }
+.nav-links {
+  display: flex; gap: 32px; list-style: none;
+}
+.nav-links a {
+  font-family: 'Space Mono', monospace;
+  font-size: 11px; letter-spacing: 0.2em; text-transform: uppercase;
+  color: rgba(240,237,230,0.5); text-decoration: none;
+  transition: color 0.2s;
+  cursor: none;
+}
+.nav-links a:hover { color: var(--gold); }
+
+@media (max-width: 600px) { .nav-links { display: none; } }
+
+/* ── FOOTER ── */
+footer {
+  padding: 40px 8vw;
+  border-top: 1px solid var(--border);
+  display: flex; justify-content: space-between; align-items: center;
+  flex-wrap: wrap; gap: 16px;
+}
+footer p {
+  font-family: 'Space Mono', monospace;
+  font-size: 11px; color: rgba(240,237,230,0.25);
+  letter-spacing: 0.1em;
+}
+
+/* Anim entrada */
+.reveal {
+  opacity: 0; transform: translateY(32px);
+  transition: opacity 0.7s ease, transform 0.7s ease;
+}
+.reveal.visible { opacity: 1; transform: translateY(0); }
+</style>
+</head>
+<body>
+
+<div id="cursor"></div>
+<div id="cursor-ring"></div>
+
+<!-- NAV -->
+<nav>
+  <div class="nav-logo">LABRIOLAG<span>AMES</span></div>
+  <ul class="nav-links">
+    <li><a href="#games">Jogos</a></li>
+    <li><a href="#whitelabel">White-Label</a></li>
+    <li><a href="#como">Como Funciona</a></li>
+    <li><a href="#contato">Contato</a></li>
+  </ul>
+</nav>
+
+<!-- HERO -->
+<section id="hero">
+  <div class="hero-bg-grid"></div>
+  <div class="hero-glow"></div>
+
+  <div class="eyebrow">Estúdio independente · Games digitais</div>
+
+  <h1 class="hero-title">
+    LABRIOLAG<span class="accent">AMES</span><br>
+    <span class="outline">PORTFÓLIO</span>
+  </h1>
+
+  <p class="hero-subtitle">
+    Jogos digitais feitos para engajar clientes.<br>
+    Cada jogo pode virar a <strong>sua marca</strong> —
+    perfeito para bares, lojas, eventos e muito mais.
+  </p>
+
+  <div class="hero-cta">
+    <a href="#games" class="btn-primary">Ver os Jogos</a>
+    <a href="#whitelabel" class="btn-secondary">Quero White-Label</a>
+  </div>
+
+  <div class="hero-stats">
+    <div class="stat-item">
+      <div class="stat-num" id="count-games">5</div>
+      <div class="stat-label">Jogos</div>
+    </div>
+    <div class="stat-item">
+      <div class="stat-num">100%</div>
+      <div class="stat-label">Web / Mobile</div>
+    </div>
+    <div class="stat-item">
+      <div class="stat-num">∞</div>
+      <div class="stat-label">Possibilidades</div>
+    </div>
+  </div>
+</section>
+
+<!-- MARQUEE -->
+<div class="marquee-wrap">
+  <div class="marquee-track" id="marqueeTrack">
+    <span class="marquee-item">Midnight Delivery</span><span class="marquee-dot">✦</span>
+    <span class="marquee-item">Slots Casino</span><span class="marquee-dot">✦</span>
+    <span class="marquee-item">Desvia das Bombas</span><span class="marquee-dot">✦</span>
+    <span class="marquee-item">ZYRO RPG Mobile</span><span class="marquee-dot">✦</span>
+    <span class="marquee-item">Fortune Scratch</span><span class="marquee-dot">✦</span>
+    <span class="marquee-item">White-Label Games</span><span class="marquee-dot">✦</span>
+    <span class="marquee-item">Engajamento Digital</span><span class="marquee-dot">✦</span>
+    <span class="marquee-item">Midnight Delivery</span><span class="marquee-dot">✦</span>
+    <span class="marquee-item">Slots Casino</span><span class="marquee-dot">✦</span>
+    <span class="marquee-item">Desvia das Bombas</span><span class="marquee-dot">✦</span>
+    <span class="marquee-item">ZYRO RPG Mobile</span><span class="marquee-dot">✦</span>
+    <span class="marquee-item">Fortune Scratch</span><span class="marquee-dot">✦</span>
+    <span class="marquee-item">White-Label Games</span><span class="marquee-dot">✦</span>
+    <span class="marquee-item">Engajamento Digital</span><span class="marquee-dot">✦</span>
+  </div>
+</div>
+
+<!-- GAMES -->
+<section id="games">
+  <div class="games-header reveal">
+    <div class="section-label">Portfólio</div>
+    <h2 class="section-title">OS JOGOS</h2>
+  </div>
+
+  <div class="games-grid">
+
+    <!-- Midnight Delivery -->
+    <div class="game-card card-moto reveal">
+      <div class="game-preview-art" style="background: linear-gradient(135deg, #050810 0%, #0A1520 100%);">
+        <svg style="position:absolute;inset:0;width:100%;height:100%;opacity:0.18" viewBox="0 0 400 300" fill="none">
+          <line x1="200" y1="0" x2="200" y2="300" stroke="#D4AF37" stroke-width="3" stroke-dasharray="20 20"/>
+          <line x1="170" y1="0" x2="170" y2="300" stroke="#D4AF37" stroke-width="1" stroke-dasharray="10 30" opacity="0.4"/>
+          <line x1="230" y1="0" x2="230" y2="300" stroke="#D4AF37" stroke-width="1" stroke-dasharray="10 30" opacity="0.4"/>
+          <rect x="160" y="200" width="40" height="50" rx="5" fill="#00E5FF" opacity="0.6"/>
+          <circle cx="180" cy="195" r="6" fill="#00E5FF"/>
+          <rect x="100" y="120" width="40" height="65" rx="4" fill="#FF3B5C" opacity="0.7"/>
+          <rect x="260" y="80" width="40" height="65" rx="4" fill="#FF3B5C" opacity="0.7"/>
+        </svg>
+      </div>
+      <div class="game-overlay"></div>
+      <div class="game-card-inner">
+        <span class="game-tag tag-action">Ação</span>
+        <div class="game-name">MIDNIGHT DELIVERY</div>
+        <p class="game-desc">Moto runner infinito. Desvie dos carros e entregue a pizza intacta.</p>
+        <a href="Motogame1.html" class="game-play-btn">Jogar agora</a>
+      </div>
+    </div>
+
+    <!-- Slots -->
+    <div class="game-card card-slot reveal">
+      <div class="game-preview-art" style="background: linear-gradient(135deg, #0A0800 0%, #1b1b2f 100%);">
+        <svg style="position:absolute;inset:0;width:100%;height:100%;opacity:0.2" viewBox="0 0 400 300" fill="none">
+          <rect x="80" y="80" width="240" height="140" rx="16" stroke="#D4AF37" stroke-width="3"/>
+          <rect x="110" y="110" width="50" height="50" rx="8" fill="#D4AF37" opacity="0.3"/>
+          <rect x="175" y="110" width="50" height="50" rx="8" fill="#D4AF37" opacity="0.3"/>
+          <rect x="240" y="110" width="50" height="50" rx="8" fill="#D4AF37" opacity="0.3"/>
+          <text x="135" y="144" font-size="26" text-anchor="middle" fill="#D4AF37">🍒</text>
+          <text x="200" y="144" font-size="26" text-anchor="middle" fill="#D4AF37">💎</text>
+          <text x="265" y="144" font-size="26" text-anchor="middle" fill="#D4AF37">⭐</text>
+        </svg>
+      </div>
+      <div class="game-overlay"></div>
+      <div class="game-card-inner">
+        <span class="game-tag tag-casino">Casino</span>
+        <div class="game-name">LABRIOLAGAME SLOTS</div>
+        <p class="game-desc">Caça-níqueis digital com login, créditos e modo VIP integrado.</p>
+        <a href="_SLOT_Ajustes.html" class="game-play-btn">Jogar agora</a>
+      </div>
+    </div>
+
+    <!-- Desvia das Bombas -->
+    <div class="game-card card-bomb reveal">
+      <div class="game-preview-art" style="background: linear-gradient(135deg, #0A0A12 0%, #111130 100%);">
+        <svg style="position:absolute;inset:0;width:100%;height:100%;opacity:0.18" viewBox="0 0 400 300" fill="none">
+          <circle cx="200" cy="230" r="22" fill="#00E5FF"/>
+          <text x="200" y="242" font-size="28" text-anchor="middle" fill="#fff">🧑‍🚀</text>
+          <text x="120" y="160" font-size="28" fill="#FF3B5C">💣</text>
+          <text x="260" y="100" font-size="28" fill="#FF3B5C">💣</text>
+          <text x="180" y="120" font-size="24" fill="#38EF7D">🎫</text>
+          <text x="300" y="200" font-size="20" fill="#38EF7D">🎫</text>
+        </svg>
+      </div>
+      <div class="game-overlay"></div>
+      <div class="game-card-inner">
+        <span class="game-tag tag-arcade">Arcade</span>
+        <div class="game-name">DESVIA DAS BOMBAS</div>
+        <p class="game-desc">Colete tickets e sobreviva. Emoji, personagem e obstáculos customizáveis.</p>
+        <a href="emoji_game_touch.html" class="game-play-btn">Jogar agora</a>
+      </div>
+    </div>
+
+    <!-- ZYRO Map -->
+    <div class="game-card card-map reveal">
+      <div class="game-preview-art" style="background: linear-gradient(135deg, #061008 0%, #0A1A0E 100%);">
+        <svg style="position:absolute;inset:0;width:100%;height:100%;opacity:0.18" viewBox="0 0 400 300" fill="none">
+          <rect x="0" y="0" width="400" height="300" fill="#228822" opacity="0.3"/>
+          <rect x="160" y="120" width="80" height="60" fill="#555" rx="4"/>
+          <rect x="260" y="80" width="60" height="40" fill="#555" rx="4"/>
+          <circle cx="200" cy="200" r="15" fill="#38EF7D" opacity="0.8"/>
+          <line x1="0" y1="150" x2="400" y2="150" stroke="#888" stroke-width="12" opacity="0.3"/>
+          <line x1="200" y1="0" x2="200" y2="300" stroke="#888" stroke-width="8" opacity="0.3"/>
+        </svg>
+      </div>
+      <div class="game-overlay"></div>
+      <div class="game-card-inner">
+        <span class="game-tag tag-rpg">RPG / Aventura</span>
+        <div class="game-name">ZYRO — WORLD MAP</div>
+        <p class="game-desc">Exploração top-down com joystick mobile, inventário e múltiplas áreas.</p>
+        <a href="Mapabetagame02_.html" class="game-play-btn">Jogar agora</a>
+      </div>
+    </div>
+
+    <!-- Fortune Scratch -->
+    <div class="game-card card-scratch reveal" style="grid-column: span 1;">
+      <div class="game-preview-art" style="background: linear-gradient(135deg, #0E0A08 0%, #1a1008 100%);">
+        <svg style="position:absolute;inset:0;width:100%;height:100%;opacity:0.2" viewBox="0 0 400 300" fill="none">
+          <rect x="100" y="80" width="200" height="140" rx="12" stroke="#FF9500" stroke-width="2" fill="rgba(255,149,0,0.06)"/>
+          <text x="200" y="155" font-size="36" text-anchor="middle" fill="#FF9500">🍀</text>
+          <text x="145" y="155" font-size="36" text-anchor="middle" fill="#FF9500">★</text>
+          <text x="255" y="155" font-size="36" text-anchor="middle" fill="#FF9500">★</text>
+          <rect x="120" y="175" width="160" height="24" rx="4" fill="#FF9500" opacity="0.2"/>
+        </svg>
+      </div>
+      <div class="game-overlay"></div>
+      <div class="game-card-inner">
+        <span class="game-tag tag-scratch">Raspadinha</span>
+        <div class="game-name">FORTUNE SCRATCH</div>
+        <p class="game-desc">Raspadinha digital interativa. Perfeito para promoções e sorteios.</p>
+        <a href="fortune-scratch.html" class="game-play-btn">Jogar agora</a>
+      </div>
+    </div>
+
+    <!-- CTA Card -->
+    <div class="game-card reveal" style="background: rgba(212,175,55,0.04); border: 1px dashed var(--gold-dim);">
+      <div class="game-card-inner" style="justify-content: center; align-items: center; text-align: center;">
+        <div style="font-size:48px; margin-bottom: 20px; opacity: 0.4;">+</div>
+        <div class="game-name" style="font-size:24px; color: rgba(240,237,230,0.3);">PRÓXIMO JOGO</div>
+        <p class="game-desc" style="text-align:center">Em desenvolvimento.<br>Quer sugerir? Fale comigo.</p>
+        <a href="#contato" class="game-play-btn" style="justify-content:center">Entrar em contato</a>
+      </div>
+    </div>
+
+  </div>
+</section>
+
+<!-- WHITE LABEL -->
+<section id="whitelabel">
+  <div class="reveal">
+    <div class="section-label">Para Negócios</div>
+    <h2 class="section-title">WHITE-LABEL</h2>
+  </div>
+
+  <div class="wl-layout">
+    <div class="wl-text reveal">
+      <p>
+        Todos os jogos do portfólio podem ser <strong>personalizados com a sua marca</strong> —
+        logo, cores, nome do estabelecimento e até o tema do jogo.
+      </p>
+      <p>
+        Ideal para <strong>bares, restaurantes, lojas, eventos e academias</strong> que querem
+        engajar clientes de forma divertida e diferente.
+      </p>
+
+      <div class="wl-bullets">
+        <div class="wl-bullet">
+          <div class="wl-bullet-icon">🎨</div>
+          <div class="wl-bullet-text">
+            <strong>Sua identidade visual</strong>
+            <span>Logo, cores e nome do seu negócio aplicados ao jogo</span>
+          </div>
+        </div>
+        <div class="wl-bullet">
+          <div class="wl-bullet-icon">📱</div>
+          <div class="wl-bullet-text">
+            <strong>100% mobile e web</strong>
+            <span>Funciona em qualquer celular, sem precisar instalar nada</span>
+          </div>
+        </div>
+        <div class="wl-bullet">
+          <div class="wl-bullet-icon">🔗</div>
+          <div class="wl-bullet-text">
+            <strong>Link ou QR Code</strong>
+            <span>Compartilhe nas redes sociais, WhatsApp ou cole no cardápio</span>
+          </div>
+        </div>
+        <div class="wl-bullet">
+          <div class="wl-bullet-icon">🎁</div>
+          <div class="wl-bullet-text">
+            <strong>Promoções integradas</strong>
+            <span>Raspadinha, slots e tickets podem premiar clientes reais</span>
+          </div>
+        </div>
+      </div>
+
+      <div style="margin-top: 36px;">
+        <a href="#contato" class="btn-primary">Quero meu jogo personalizado</a>
+      </div>
+    </div>
+
+    <!-- MOCKUP -->
+    <div class="wl-mockup reveal">
+      <div class="brand-switcher">
+        <div class="brand-switcher-header">
+          <span class="dot dot-r"></span>
+          <span class="dot dot-y"></span>
+          <span class="dot dot-g"></span>
+          &nbsp; Exemplos de customização
+        </div>
+        <div class="brand-examples">
+          <div class="brand-ex">
+            <div class="brand-badge" style="background:rgba(255,59,92,0.15);">🍕</div>
+            <div class="brand-name-mock">PIZZARIA<br>DO ZÉ</div>
+            <div class="brand-tag-mock">Midnight Delivery<br>personalizado</div>
+          </div>
+          <div class="brand-ex">
+            <div class="brand-badge" style="background:rgba(0,229,255,0.12);">🍺</div>
+            <div class="brand-name-mock">BAR<br>IMPERIAL</div>
+            <div class="brand-tag-mock">Slots<br>personalizado</div>
+          </div>
+          <div class="brand-ex">
+            <div class="brand-badge" style="background:rgba(56,239,125,0.12);">💪</div>
+            <div class="brand-name-mock">GYM<br>POWER</div>
+            <div class="brand-tag-mock">Desvia das Bombas<br>personalizado</div>
+          </div>
+          <div class="brand-ex">
+            <div class="brand-badge" style="background:rgba(255,149,0,0.12);">🛍️</div>
+            <div class="brand-name-mock">LOJA<br>FASHION</div>
+            <div class="brand-tag-mock">Fortune Scratch<br>personalizado</div>
+          </div>
+        </div>
+        <div class="wl-cta-box">
+          <span>Qual seria o jogo da sua marca?</span>
+          <a href="#contato">Falar agora →</a>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- COMO FUNCIONA -->
+<section id="como">
+  <div class="reveal">
+    <div class="section-label">Processo</div>
+    <h2 class="section-title">COMO FUNCIONA</h2>
+  </div>
+
+  <div class="steps">
+    <div class="step reveal">
+      <div class="step-num">01</div>
+      <div class="step-icon">💬</div>
+      <div class="step-title">Conversa inicial</div>
+      <p class="step-text">Me conta seu negócio, público e objetivo. Qual jogo faz mais sentido pra você?</p>
+    </div>
+    <div class="step reveal">
+      <div class="step-num">02</div>
+      <div class="step-icon">🎨</div>
+      <div class="step-title">Personalização</div>
+      <p class="step-text">Aplico sua logo, cores e nome. Adapto o tema do jogo ao seu negócio.</p>
+    </div>
+    <div class="step reveal">
+      <div class="step-num">03</div>
+      <div class="step-icon">🧪</div>
+      <div class="step-title">Aprovação</div>
+      <p class="step-text">Você testa e aprova. Ajustes incluídos nessa fase.</p>
+    </div>
+    <div class="step reveal">
+      <div class="step-num">04</div>
+      <div class="step-icon">🚀</div>
+      <div class="step-title">Entrega + Link</div>
+      <p class="step-text">Recebe o arquivo HTML pronto + link para compartilhar com seus clientes.</p>
+    </div>
+  </div>
+</section>
+
+<!-- CONTATO -->
+<section id="contato">
+  <div class="contact-inner reveal">
+    <div class="section-label" style="justify-content:center">Vamos criar juntos</div>
+    <h2 class="section-title">FALE COMIGO</h2>
+    <p>
+      Tem um negócio e quer engajar seus clientes com um jogo personalizado?<br>
+      Ou quer ver algo novo no portfólio? Me manda uma mensagem.
+    </p>
+    <div class="contact-btns">
+      <a href="https://wa.me/55SEUNUMERO" class="btn-primary" target="_blank">WhatsApp</a>
+      <a href="mailto:seuemail@email.com" class="btn-secondary">E-mail</a>
+    </div>
+    <p style="margin-top:32px; font-family:'Space Mono',monospace; font-size:11px; color:rgba(240,237,230,0.25); letter-spacing:0.15em;">
+      LABRIOLAGAMES · Jogos digitais para seu negócio
+    </p>
+  </div>
+</section>
+
+<footer>
+  <p>© 2025 LABRIOLAGAMES — Todos os direitos reservados</p>
+  <p>Feito com ☕ e muito código</p>
+</footer>
+
+<script>
+// Cursor
+const cursor = document.getElementById('cursor');
+const ring = document.getElementById('cursor-ring');
+let mx=0, my=0, rx=0, ry=0;
+document.addEventListener('mousemove', e => { mx=e.clientX; my=e.clientY; cursor.style.left=mx+'px'; cursor.style.top=my+'px'; });
+function animRing(){
+  rx += (mx-rx)*0.14; ry += (my-ry)*0.14;
+  ring.style.left=rx+'px'; ring.style.top=ry+'px';
+  requestAnimationFrame(animRing);
+}
+animRing();
+document.querySelectorAll('a,button,.game-card,.wl-bullet,.step,.brand-ex').forEach(el=>{
+  el.addEventListener('mouseenter',()=>{ cursor.style.width='18px'; cursor.style.height='18px'; ring.style.width='52px'; ring.style.height='52px'; ring.style.borderColor='var(--gold)'; });
+  el.addEventListener('mouseleave',()=>{ cursor.style.width='10px'; cursor.style.height='10px'; ring.style.width='36px'; ring.style.height='36px'; ring.style.borderColor='var(--gold)'; });
+});
+
+// Scroll reveal
+const obs = new IntersectionObserver((entries)=>{
+  entries.forEach(e=>{ if(e.isIntersecting){ e.target.classList.add('visible'); } });
+},{threshold:0.1});
+document.querySelectorAll('.reveal').forEach(el=>obs.observe(el));
+
+// Smooth nav scroll
+document.querySelectorAll('a[href^="#"]').forEach(a=>{
+  a.addEventListener('click',e=>{
+    e.preventDefault();
+    const t = document.querySelector(a.getAttribute('href'));
+    if(t) t.scrollIntoView({behavior:'smooth'});
+  });
+});
+</script>
+</body>
+</html>
