@@ -1,0 +1,262 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Cardápio Builder — Labriolag</title>
+  <meta name="description" content="Crie cardápios digitais para seu negócio. Gere QR Code, PDF e HTML offline.">
+  <link rel="stylesheet" href="style.css">
+
+  <!-- QRCode.js — gerar QR (~24kb) -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js" defer></script>
+  <!-- jsQR — ler QR da câmera/imagem (~53kb) -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jsqr/1.4.0/jsQR.js" defer></script>
+  <!-- App principal -->
+  <script src="app.js" defer></script>
+</head>
+<body>
+
+<!-- ═══════════════════ TOPBAR ═══════════════════ -->
+<header class="topbar">
+  <div class="tb-logo">
+    <div class="tb-logo-mark">🍽</div>
+    <div class="tb-logo-text">
+      LABRIOLAG
+      <small>CARDÁPIO BUILDER v2</small>
+    </div>
+  </div>
+
+  <div class="tb-sep"></div>
+
+  <nav class="tab-row" id="tab-row">
+    <button class="tab-btn active" data-tab="marca">🎨 Marca</button>
+    <button class="tab-btn" data-tab="cardapio">📋 Cardápio</button>
+    <button class="tab-btn" data-tab="horario">⏰ Horário</button>
+    <button class="tab-btn" data-tab="entrega">🚗 Entrega</button>
+  </nav>
+
+  <div class="tb-sep"></div>
+
+  <div class="tb-actions">
+    <button class="act-btn btn-save" id="btn-save">💾 Salvar</button>
+    <button class="act-btn btn-prev" id="btn-preview">👁 Preview</button>
+    <button class="act-btn btn-qr"  id="btn-qr">📲 Gerar QR</button>
+    <button class="act-btn btn-bkp" id="btn-bkp">📦 Backup</button>
+    <button class="act-btn btn-pdf" id="btn-pdf">📄 PDF</button>
+  </div>
+</header>
+
+<!-- ═══════════════════ WORKSPACE ═══════════════════ -->
+<main class="workspace">
+
+  <!-- EDITOR -->
+  <aside class="editor-panel">
+    <div class="editor-body" id="editor-body">
+      <!-- Injetado via JS -->
+    </div>
+  </aside>
+
+  <!-- PREVIEW (desktop) -->
+  <section class="preview-panel">
+    <div class="pv-bar">
+      <div class="pv-dots">
+        <div class="pv-dot r"></div>
+        <div class="pv-dot y"></div>
+        <div class="pv-dot g"></div>
+      </div>
+      <div class="pv-bar-label">Pré-visualização em tempo real</div>
+    </div>
+    <div class="pv-wrap">
+      <div class="phone">
+        <div class="phone-notch"></div>
+        <div id="pv-root"></div>
+      </div>
+    </div>
+  </section>
+
+</main>
+
+<!-- ═══════════════════ MODAL — QR CARDÁPIO ═══════════════════ -->
+<div class="modal-bg" id="modal-qr">
+  <div class="modal">
+    <h3>📲 QR CODE DO CARDÁPIO</h3>
+    <p class="modal-sub">
+      O cliente escaneia esse QR Code e abre o cardápio direto no celular, <strong>sem internet</strong>.
+      Ideal para colocar nas mesas, balcão ou enviar por WhatsApp.
+    </p>
+
+    <div class="modal-tabs">
+      <button class="modal-tab active" id="qtab-qr">📲 QR Code</button>
+      <button class="modal-tab" id="qtab-html">⬇ HTML</button>
+    </div>
+
+    <!-- Painel QR -->
+    <div id="qpanel-qr">
+      <div class="qr-box">
+        <div id="qr-canvas-container"></div>
+        <div class="qr-lbl">Escaneie para abrir o cardápio</div>
+        <div class="qr-sub" id="qr-size-info"></div>
+      </div>
+      <div class="modal-actions">
+        <button class="btn-cancel" id="btn-close-qr">Fechar</button>
+        <button class="btn-ok" id="btn-baixar-qr">⬇ Salvar QR</button>
+      </div>
+    </div>
+
+    <!-- Painel HTML (alternativa) -->
+    <div id="qpanel-html" style="display:none">
+      <p style="color:var(--muted2);font-size:.83rem;line-height:1.6;margin-bottom:16px;">
+        Para cardápios grandes (muitas fotos), baixe o <strong>arquivo HTML</strong>.
+        Hospede no GitHub Pages ou envie diretamente por WhatsApp.
+        O cliente abre no navegador, funciona <strong>offline</strong>.
+      </p>
+      <div class="modal-actions">
+        <button class="btn-cancel" id="btn-close-qr2">Fechar</button>
+        <button class="btn-ok" id="btn-baixar-html">⬇ Baixar HTML</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ═══════════════════ MODAL — BACKUP QR ═══════════════════ -->
+<div class="modal-bg" id="modal-bkp">
+  <div class="modal" style="max-width:520px;">
+    <h3>📦 BACKUP DO CARDÁPIO</h3>
+
+    <div class="modal-tabs" style="margin-bottom:18px;">
+      <button class="modal-tab active" id="bkp-tab-gerar">📦 Gerar</button>
+      <button class="modal-tab" id="bkp-tab-camera">📷 Câmera</button>
+      <button class="modal-tab" id="bkp-tab-upload">🖼 Imagem</button>
+    </div>
+
+    <!-- ── PAINEL: GERAR ── -->
+    <div id="bkp-panel-gerar">
+      <p class="modal-sub">
+        Este QR Code guarda <strong>toda a configuração</strong> do seu cardápio (nome, itens, preços, horário — sem fotos).
+        Imprima e guarde. Se trocar de PC, escaneie para restaurar tudo na hora.
+      </p>
+      <div class="qr-box">
+        <div id="bkp-canvas-container"></div>
+        <div class="qr-lbl">Backup portátil — escaneie para restaurar</div>
+        <div class="qr-sub">Fotos precisam ser adicionadas novamente após restaurar.</div>
+      </div>
+      <div class="modal-actions">
+        <button class="btn-cancel" id="btn-close-bkp">Fechar</button>
+        <button class="btn-ok" id="btn-baixar-bkp">⬇ Salvar Imagem</button>
+      </div>
+    </div>
+
+    <!-- ── PAINEL: CÂMERA ── -->
+    <div id="bkp-panel-camera" style="display:none">
+      <p class="modal-sub">
+        Aponte a câmera para o <strong>QR Code de Backup</strong> impresso.
+        O cardápio será restaurado automaticamente.
+      </p>
+
+      <!-- Área da câmera -->
+      <div id="camera-area" style="
+        position:relative; background:#000; border-radius:12px; overflow:hidden;
+        margin-bottom:14px; aspect-ratio:1; max-height:280px; display:flex;
+        align-items:center; justify-content:center;">
+        <video id="camera-video" autoplay playsinline muted
+          style="width:100%;height:100%;object-fit:cover; display:none;"></video>
+        <canvas id="camera-canvas" style="display:none;"></canvas>
+
+        <!-- Mira de scan -->
+        <div id="camera-mira" style="
+          position:absolute; inset:0; display:flex; align-items:center; justify-content:center;
+          pointer-events:none;">
+          <div style="
+            width:60%; aspect-ratio:1;
+            border:2px solid rgba(59,108,244,.8);
+            border-radius:14px;
+            box-shadow:0 0 0 9999px rgba(0,0,0,.45);
+            position:relative;">
+            <!-- cantos animados -->
+            <span style="position:absolute;top:-2px;left:-2px;width:22px;height:22px;border-top:3px solid #3b6cf4;border-left:3px solid #3b6cf4;border-radius:4px 0 0 0;"></span>
+            <span style="position:absolute;top:-2px;right:-2px;width:22px;height:22px;border-top:3px solid #3b6cf4;border-right:3px solid #3b6cf4;border-radius:0 4px 0 0;"></span>
+            <span style="position:absolute;bottom:-2px;left:-2px;width:22px;height:22px;border-bottom:3px solid #3b6cf4;border-left:3px solid #3b6cf4;border-radius:0 0 0 4px;"></span>
+            <span style="position:absolute;bottom:-2px;right:-2px;width:22px;height:22px;border-bottom:3px solid #3b6cf4;border-right:3px solid #3b6cf4;border-radius:0 0 4px 0;"></span>
+          </div>
+        </div>
+
+        <!-- Placeholder quando câmera ainda não iniciou -->
+        <div id="camera-placeholder" style="
+          display:flex;flex-direction:column;align-items:center;gap:10px;
+          color:#4a5070;font-size:.82rem;text-align:center;padding:20px;">
+          <span style="font-size:2.5rem;">📷</span>
+          Clique em <strong style="color:#dde1f5;">Iniciar Câmera</strong> abaixo
+        </div>
+
+        <!-- Status de leitura -->
+        <div id="camera-status" style="
+          position:absolute; bottom:10px; left:50%; transform:translateX(-50%);
+          background:rgba(0,0,0,.7); padding:5px 14px; border-radius:20px;
+          font-size:.7rem; font-weight:700; letter-spacing:.8px; color:#fff;
+          white-space:nowrap; display:none;">
+          Procurando QR Code…
+        </div>
+      </div>
+
+      <div class="modal-actions">
+        <button class="btn-cancel" id="btn-close-camera">Fechar</button>
+        <button class="btn-ok" id="btn-start-camera">📷 Iniciar Câmera</button>
+      </div>
+    </div>
+
+    <!-- ── PAINEL: UPLOAD DE IMAGEM ── -->
+    <div id="bkp-panel-upload" style="display:none">
+      <p class="modal-sub">
+        Selecione a <strong>imagem do QR Code de Backup</strong> salva no seu celular ou computador.
+        O cardápio será restaurado automaticamente.
+      </p>
+
+      <label id="upload-drop-area" style="
+        display:flex; flex-direction:column; align-items:center; justify-content:center;
+        gap:10px; border:2px dashed var(--border); border-radius:12px;
+        padding:28px; cursor:pointer; transition:all .15s; margin-bottom:16px;
+        color:var(--muted2); font-size:.82rem; text-align:center;">
+        <span style="font-size:2.5rem;">🖼</span>
+        <span>Clique para selecionar a imagem do QR Code</span>
+        <small style="color:var(--muted); font-size:.7rem;">PNG, JPG ou WebP</small>
+        <input type="file" id="inp-qr-upload" accept="image/*" style="display:none;">
+      </label>
+
+      <!-- Preview da imagem carregada + status -->
+      <div id="upload-result" style="display:none; margin-bottom:16px;">
+        <img id="upload-preview-img" style="
+          max-width:100%; border-radius:10px; display:block; margin:0 auto 10px;">
+        <div id="upload-status" style="
+          text-align:center; font-size:.8rem; font-weight:700;
+          padding:8px 14px; border-radius:8px;"></div>
+      </div>
+
+      <div class="modal-actions">
+        <button class="btn-cancel" id="btn-close-upload">Fechar</button>
+        <button class="btn-ok" id="btn-processar-upload" style="display:none;">✓ Restaurar Cardápio</button>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<!-- ═══════════════════ MODAL — PDF ═══════════════════ -->
+<div class="modal-bg" id="modal-pdf">
+  <div class="modal">
+    <h3>📄 GERAR PDF DO CARDÁPIO</h3>
+    <p class="modal-sub">
+      Abre uma janela de impressão com seu cardápio formatado.
+      Use <strong>Ctrl+P → Salvar como PDF</strong> para baixar o arquivo.
+    </p>
+    <div class="modal-actions">
+      <button class="btn-cancel" id="btn-close-pdf">Cancelar</button>
+      <button class="btn-ok" id="btn-ok-pdf">📄 Gerar e Imprimir</button>
+    </div>
+  </div>
+</div>
+
+<!-- ═══════════════════ TOAST ═══════════════════ -->
+<div class="toast" id="toast"></div>
+
+</body>
+</html>
