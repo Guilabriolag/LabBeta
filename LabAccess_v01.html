@@ -1,0 +1,893 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+    <title>LabAccess · Sistema de Controle de Acesso</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:opsz,wght@14..32,300;14..32,400;14..32,500;14..32,600;14..32,700;14..32,800&family=JetBrains+Mono:wght@400;700&display=swap" rel="stylesheet">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            background: #0a0c15;
+            font-family: 'Inter', sans-serif;
+            min-height: 100vh;
+        }
+
+        /* Header Premium */
+        .header-premium {
+            background: rgba(17, 24, 39, 0.95);
+            backdrop-filter: blur(12px);
+            border-bottom: 1px solid rgba(245, 158, 11, 0.2);
+            padding: 12px 24px;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+        .header-content {
+            max-width: 1400px;
+            margin: 0 auto;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        .logo-area {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+        .logo-icon {
+            width: 32px;
+            height: 32px;
+            background: linear-gradient(135deg, #f59e0b, #ef4444);
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 800;
+            font-size: 1.2rem;
+        }
+        .logo-text {
+            font-weight: 800;
+            font-size: 1.3rem;
+            letter-spacing: -0.5px;
+        }
+        .logo-text span {
+            color: #f59e0b;
+        }
+        .logo-sub {
+            font-size: 0.7rem;
+            color: #64748b;
+            margin-left: 8px;
+        }
+        .status-badge {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            background: rgba(16, 185, 129, 0.1);
+            padding: 6px 14px;
+            border-radius: 40px;
+            border: 1px solid rgba(16, 185, 129, 0.3);
+        }
+        .status-dot {
+            width: 8px;
+            height: 8px;
+            background: #10b981;
+            border-radius: 50%;
+            animation: pulse 1.5s infinite;
+        }
+        @keyframes pulse {
+            0%, 100% { opacity: 1; transform: scale(1); }
+            50% { opacity: 0.5; transform: scale(0.9); }
+        }
+
+        /* Container Principal */
+        .main-container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 24px;
+            display: grid;
+            grid-template-columns: 1fr 420px;
+            gap: 24px;
+        }
+
+        /* Cards */
+        .card-premium {
+            background: rgba(17, 24, 39, 0.8);
+            backdrop-filter: blur(12px);
+            border-radius: 24px;
+            border: 1px solid rgba(255,255,255,0.08);
+            overflow: hidden;
+        }
+        .card-header {
+            padding: 20px 24px;
+            border-bottom: 1px solid rgba(255,255,255,0.08);
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+        .card-header-icon {
+            width: 36px;
+            height: 36px;
+            background: rgba(245, 158, 11, 0.15);
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.2rem;
+        }
+        .card-header h2 {
+            font-size: 1.1rem;
+            font-weight: 600;
+            color: white;
+        }
+        .card-header p {
+            font-size: 0.7rem;
+            color: #94a3b8;
+            margin-top: 2px;
+        }
+        .card-body {
+            padding: 24px;
+        }
+
+        /* Formulário */
+        .form-group {
+            margin-bottom: 16px;
+        }
+        label {
+            display: block;
+            color: #94a3b8;
+            font-size: 0.7rem;
+            font-weight: 600;
+            margin-bottom: 6px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+        input, select {
+            width: 100%;
+            padding: 12px 14px;
+            background: rgba(0,0,0,0.4);
+            border: 1px solid rgba(255,255,255,0.1);
+            border-radius: 12px;
+            color: white;
+            font-size: 0.85rem;
+            transition: all 0.2s;
+        }
+        input:focus, select:focus {
+            outline: none;
+            border-color: #f59e0b;
+            box-shadow: 0 0 0 3px rgba(245,158,11,0.1);
+        }
+        .row-2 {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 12px;
+        }
+
+        /* Modelos */
+        .models-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 12px;
+            margin-bottom: 20px;
+        }
+        .model-card {
+            background: rgba(0,0,0,0.3);
+            border: 2px solid rgba(255,255,255,0.08);
+            border-radius: 16px;
+            padding: 12px;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+        .model-card:hover, .model-card.selected {
+            border-color: #f59e0b;
+            background: rgba(245,158,11,0.1);
+            transform: translateY(-2px);
+        }
+        .model-icon { font-size: 1.5rem; margin-bottom: 6px; }
+        .model-name { color: white; font-size: 0.7rem; font-weight: 600; }
+
+        /* Cores */
+        .colors-grid {
+            display: flex;
+            gap: 12px;
+            flex-wrap: wrap;
+            margin-bottom: 20px;
+        }
+        .color-option {
+            width: 40px;
+            height: 40px;
+            border-radius: 12px;
+            cursor: pointer;
+            border: 2px solid transparent;
+            transition: all 0.2s;
+        }
+        .color-option.selected {
+            border-color: white;
+            transform: scale(1.1);
+        }
+
+        /* Planos */
+        .plans-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 12px;
+            margin-bottom: 20px;
+        }
+        .plan-card {
+            background: rgba(0,0,0,0.3);
+            border: 2px solid rgba(255,255,255,0.08);
+            border-radius: 16px;
+            padding: 12px;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+        .plan-card.selected {
+            border-color: #f59e0b;
+            background: linear-gradient(135deg, rgba(245,158,11,0.15), rgba(239,68,68,0.15));
+        }
+        .plan-price {
+            font-size: 1.2rem;
+            font-weight: 800;
+            color: #f59e0b;
+        }
+        .plan-qty {
+            font-size: 0.65rem;
+            color: #94a3b8;
+        }
+
+        /* Botões */
+        .btn-primary {
+            width: 100%;
+            padding: 14px;
+            background: linear-gradient(135deg, #f59e0b, #ef4444);
+            border: none;
+            border-radius: 16px;
+            color: white;
+            font-weight: 700;
+            font-size: 0.9rem;
+            cursor: pointer;
+            transition: all 0.2s;
+            margin-top: 8px;
+        }
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 25px rgba(245,158,11,0.3);
+        }
+        .btn-success {
+            background: linear-gradient(135deg, #10b981, #059669);
+        }
+
+        /* Crachá */
+        .crachá {
+            background: linear-gradient(135deg, #1e293b, #0f172a);
+            border-radius: 20px;
+            padding: 20px;
+            position: relative;
+            overflow: hidden;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.4);
+            margin-bottom: 20px;
+        }
+        .crachá::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 4px;
+            background: var(--accent, #f59e0b);
+        }
+        .crachá-header {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 16px;
+            padding-bottom: 12px;
+            border-bottom: 1px solid rgba(255,255,255,0.1);
+        }
+        .crachá-logo {
+            font-weight: 800;
+            background: linear-gradient(135deg, #f59e0b, #ef4444);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+        .crachá-badge {
+            background: rgba(255,255,255,0.1);
+            padding: 4px 10px;
+            border-radius: 20px;
+            font-size: 0.6rem;
+            color: #f59e0b;
+        }
+        .crachá-info {
+            text-align: center;
+            margin-bottom: 16px;
+        }
+        .crachá-nome {
+            font-size: 1.1rem;
+            font-weight: 700;
+            color: white;
+        }
+        .crachá-funcao {
+            font-size: 0.75rem;
+            color: #f59e0b;
+        }
+        .crachá-details {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 8px;
+            margin-bottom: 16px;
+            padding: 10px;
+            background: rgba(0,0,0,0.3);
+            border-radius: 12px;
+        }
+        .detail-item {
+            text-align: center;
+        }
+        .detail-label {
+            font-size: 0.5rem;
+            color: #94a3b8;
+        }
+        .detail-value {
+            font-size: 0.65rem;
+            color: white;
+            font-weight: 600;
+        }
+        .crachá-qr {
+            display: flex;
+            justify-content: center;
+            margin: 12px 0;
+        }
+        .qr-placeholder {
+            width: 100px;
+            height: 100px;
+            background: white;
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #666;
+            font-size: 0.6rem;
+        }
+        .crachá-footer {
+            text-align: center;
+            font-size: 0.55rem;
+            color: #64748b;
+        }
+
+        /* Modal */
+        .modal {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.95);
+            backdrop-filter: blur(16px);
+            z-index: 1000;
+            display: none;
+            align-items: center;
+            justify-content: center;
+        }
+        .modal.open {
+            display: flex;
+        }
+        .modal-content {
+            background: #1e293b;
+            border-radius: 24px;
+            padding: 32px;
+            max-width: 380px;
+            width: 90%;
+            text-align: center;
+            border: 1px solid rgba(245,158,11,0.3);
+        }
+        .modal-qr {
+            background: white;
+            padding: 12px;
+            border-radius: 16px;
+            display: inline-block;
+            margin: 16px 0;
+        }
+
+        /* Toast */
+        .toast {
+            position: fixed;
+            bottom: 24px;
+            right: 24px;
+            background: #10b981;
+            color: white;
+            padding: 12px 20px;
+            border-radius: 40px;
+            font-size: 0.8rem;
+            z-index: 1100;
+            animation: slideIn 0.3s ease;
+        }
+        @keyframes slideIn {
+            from { transform: translateX(100%); opacity: 0; }
+            to { transform: translateX(0); opacity: 1; }
+        }
+
+        @media (max-width: 900px) {
+            .main-container { grid-template-columns: 1fr; }
+            .plans-grid { grid-template-columns: repeat(2, 1fr); }
+        }
+    </style>
+</head>
+<body>
+
+<!-- Header Premium -->
+<header class="header-premium">
+    <div class="header-content">
+        <div class="logo-area">
+            <div class="logo-icon">⚡</div>
+            <div class="logo-text">Lab<span>Access</span></div>
+            <div class="logo-sub">QR Control System</div>
+        </div>
+        <div class="status-badge">
+            <div class="status-dot"></div>
+            <span>Online · Pronto para uso</span>
+        </div>
+    </div>
+</header>
+
+<div class="main-container">
+    <!-- Painel Esquerdo: Criação -->
+    <div class="card-premium">
+        <div class="card-header">
+            <div class="card-header-icon">🎫</div>
+            <div>
+                <h2>Gerar Crachá de Acesso</h2>
+                <p>Preencha os dados e gere o QR Code</p>
+            </div>
+        </div>
+        <div class="card-body">
+            <!-- Modelo -->
+            <label>🎨 Modelo</label>
+            <div class="models-grid" id="modelsGrid">
+                <div class="model-card" data-model="modern">
+                    <div class="model-icon">✨</div>
+                    <div class="model-name">Moderno</div>
+                </div>
+                <div class="model-card selected" data-model="corporate">
+                    <div class="model-icon">💼</div>
+                    <div class="model-name">Corporativo</div>
+                </div>
+                <div class="model-card" data-model="minimal">
+                    <div class="model-icon">🎯</div>
+                    <div class="model-name">Minimalista</div>
+                </div>
+            </div>
+
+            <!-- Dados Empresa -->
+            <label>🏢 Dados da Empresa</label>
+            <input type="text" id="empresa" placeholder="Nome da Empresa" value="Labriolag Holding">
+            <div class="row-2">
+                <input type="text" id="cnpj" placeholder="CNPJ">
+                <select id="setor">
+                    <option>Tecnologia</option>
+                    <option>Comércio</option>
+                    <option>Serviços</option>
+                    <option>Educação</option>
+                </select>
+            </div>
+
+            <!-- Dados Colaborador -->
+            <label>👤 Colaborador</label>
+            <input type="text" id="nome" placeholder="Nome Completo" value="Carlos Eduardo">
+            <div class="row-2">
+                <input type="text" id="funcao" placeholder="Cargo" value="Coordenador">
+                <input type="text" id="departamento" placeholder="Departamento" value="Operações">
+            </div>
+            <div class="row-2">
+                <input type="text" id="matricula" placeholder="Matrícula" value="LAB-001">
+                <select id="perfil">
+                    <option>Administrador</option>
+                    <option>Gerente</option>
+                    <option selected>Operador</option>
+                    <option>Visitante</option>
+                </select>
+            </div>
+
+            <!-- Validade -->
+            <label>📅 Validade</label>
+            <div class="row-2">
+                <input type="date" id="dataEmissao">
+                <input type="date" id="dataValidade">
+            </div>
+
+            <!-- Cor -->
+            <label>🎨 Cor do Destaque</label>
+            <div class="colors-grid" id="colorsGrid">
+                <div class="color-option" style="background: #f59e0b;" data-color="#f59e0b"></div>
+                <div class="color-option selected" style="background: #3b82f6;" data-color="#3b82f6"></div>
+                <div class="color-option" style="background: #ef4444;" data-color="#ef4444"></div>
+                <div class="color-option" style="background: #10b981;" data-color="#10b981"></div>
+                <div class="color-option" style="background: #8b5cf6;" data-color="#8b5cf6"></div>
+            </div>
+
+            <!-- Planos -->
+            <label>💰 Escolha seu Plano</label>
+            <div class="plans-grid" id="plansGrid">
+                <div class="plan-card" data-qty="20" data-price="29">
+                    <div class="plan-price">R$ 29</div>
+                    <div class="plan-qty">20 acessos</div>
+                </div>
+                <div class="plan-card selected" data-qty="60" data-price="79">
+                    <div class="plan-price">R$ 79</div>
+                    <div class="plan-qty">60 acessos</div>
+                </div>
+                <div class="plan-card" data-qty="150" data-price="149">
+                    <div class="plan-price">R$ 149</div>
+                    <div class="plan-qty">150 acessos</div>
+                </div>
+            </div>
+
+            <button class="btn-primary" onclick="generateBadge()">⚡ GERAR QR CODE DE ACESSO</button>
+        </div>
+    </div>
+
+    <!-- Painel Direito: Preview + Pagamento -->
+    <div>
+        <div class="card-premium" style="margin-bottom: 20px;">
+            <div class="card-header">
+                <div class="card-header-icon">📱</div>
+                <div>
+                    <h2>Preview do Crachá</h2>
+                    <p>Visualize como ficará o acesso</p>
+                </div>
+            </div>
+            <div class="card-body">
+                <div id="crachá" class="crachá" style="--accent: #3b82f6">
+                    <div class="crachá-header">
+                        <div class="crachá-logo" id="previewEmpresa">Labriolag Holding</div>
+                        <div class="crachá-badge">QR Access</div>
+                    </div>
+                    <div class="crachá-info">
+                        <div class="crachá-nome" id="previewNome">Carlos Eduardo</div>
+                        <div class="crachá-funcao" id="previewFuncao">Coordenador</div>
+                    </div>
+                    <div class="crachá-details">
+                        <div class="detail-item">
+                            <div class="detail-label">Perfil</div>
+                            <div class="detail-value" id="previewPerfil">Operador</div>
+                        </div>
+                        <div class="detail-item">
+                            <div class="detail-label">Depto</div>
+                            <div class="detail-value" id="previewDepto">Operações</div>
+                        </div>
+                        <div class="detail-item">
+                            <div class="detail-label">ID</div>
+                            <div class="detail-value" id="previewMatricula">LAB-001</div>
+                        </div>
+                    </div>
+                    <div class="crachá-qr">
+                        <div id="qrPlaceholder" class="qr-placeholder">
+                            <span>⚡ QR Code</span>
+                        </div>
+                        <div id="qrContainer" style="display:none;"></div>
+                    </div>
+                    <div class="crachá-footer">
+                        <span>Válido até: <span id="previewValidade">--/--/----</span></span>
+                    </div>
+                </div>
+                <div style="text-align: center; margin-top: 16px; padding: 12px; background: rgba(0,0,0,0.3); border-radius: 12px;">
+                    <div style="font-size: 0.7rem; color: #94a3b8;">Total do pedido</div>
+                    <div style="font-size: 1.5rem; font-weight: 800; color: #f59e0b;" id="totalValue">R$ 79,00</div>
+                    <div style="font-size: 0.65rem; color: #64748b;" id="qtyInfo">60 acessos · R$ 1,32 por acesso</div>
+                </div>
+                <button class="btn-primary btn-success" id="paymentBtn" onclick="handlePayment()" disabled>💳 GERAR QR PRIMEIRO</button>
+            </div>
+        </div>
+
+        <!-- Informação de Venda -->
+        <div class="card-premium">
+            <div class="card-header">
+                <div class="card-header-icon">💡</div>
+                <div>
+                    <h2>Como funciona?</h2>
+                    <p>Simples e sem mensalidade</p>
+                </div>
+            </div>
+            <div class="card-body">
+                <div style="display: flex; gap: 12px; margin-bottom: 12px;">
+                    <div style="width: 32px; height: 32px; background: rgba(245,158,11,0.2); border-radius: 50%; display: flex; align-items: center; justify-content: center;">1️⃣</div>
+                    <div><strong>Gere o QR Code</strong><br><span style="font-size: 0.75rem; color: #94a3b8;">Preencha os dados e gere o QR de acesso</span></div>
+                </div>
+                <div style="display: flex; gap: 12px; margin-bottom: 12px;">
+                    <div style="width: 32px; height: 32px; background: rgba(245,158,11,0.2); border-radius: 50%; display: flex; align-items: center; justify-content: center;">2️⃣</div>
+                    <div><strong>Escolha o plano</strong><br><span style="font-size: 0.75rem; color: #94a3b8;">Pague apenas pelos acessos que vai usar</span></div>
+                </div>
+                <div style="display: flex; gap: 12px;">
+                    <div style="width: 32px; height: 32px; background: rgba(245,158,11,0.2); border-radius: 50%; display: flex; align-items: center; justify-content: center;">3️⃣</div>
+                    <div><strong>Baixe e use</strong><br><span style="font-size: 0.75rem; color: #94a3b8;">Imprima ou envie o QR para seus colaboradores</span></div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Modal Pagamento -->
+<div id="paymentModal" class="modal">
+    <div class="modal-content">
+        <h3 style="color: white;">⚡ Pagamento via PIX</h3>
+        <div style="font-size: 2rem; font-weight: 800; color: #f59e0b; margin: 12px 0;" id="modalTotal">R$ 79,00</div>
+        <div id="modalQr" class="modal-qr"></div>
+        <div style="font-size: 0.7rem; color: #94a3b8; margin: 12px 0;">Chave PIX: contato@labriolag.com.br</div>
+        <div style="display: flex; gap: 12px;">
+            <button class="btn-primary" style="flex:1;" onclick="simulatePayment()">✅ SIMULAR PAGAMENTO</button>
+            <button class="btn-primary" style="flex:1; background:#334155;" onclick="closeModal()">FECHAR</button>
+        </div>
+    </div>
+</div>
+
+<script>
+    // Estado do Sistema
+    let selectedModel = 'corporate';
+    let selectedColor = '#3b82f6';
+    let selectedQty = 60;
+    let selectedPrice = 79;
+    let isPaid = false;
+    let qrGenerated = false;
+    let currentQRContent = '';
+
+    // Inicialização
+    document.addEventListener('DOMContentLoaded', () => {
+        // Datas
+        const hoje = new Date().toISOString().split('T')[0];
+        document.getElementById('dataEmissao').value = hoje;
+        const umAno = new Date();
+        umAno.setFullYear(umAno.getFullYear() + 1);
+        document.getElementById('dataValidade').value = umAno.toISOString().split('T')[0];
+        
+        // Eventos
+        ['empresa', 'nome', 'funcao', 'departamento', 'matricula', 'perfil', 'setor', 'dataValidade'].forEach(id => {
+            const el = document.getElementById(id);
+            if(el) el.addEventListener('input', () => updatePreview());
+        });
+        
+        // Modelos
+        document.querySelectorAll('.model-card').forEach(card => {
+            card.addEventListener('click', () => {
+                document.querySelectorAll('.model-card').forEach(c => c.classList.remove('selected'));
+                card.classList.add('selected');
+                selectedModel = card.dataset.model;
+                updatePreview();
+            });
+        });
+        
+        // Cores
+        document.querySelectorAll('.color-option').forEach(color => {
+            color.addEventListener('click', () => {
+                document.querySelectorAll('.color-option').forEach(c => c.classList.remove('selected'));
+                color.classList.add('selected');
+                selectedColor = color.dataset.color;
+                document.getElementById('crachá').style.setProperty('--accent', selectedColor);
+                updatePreview();
+            });
+        });
+        
+        // Planos
+        document.querySelectorAll('.plan-card').forEach(plan => {
+            plan.addEventListener('click', () => {
+                document.querySelectorAll('.plan-card').forEach(p => p.classList.remove('selected'));
+                plan.classList.add('selected');
+                selectedQty = parseInt(plan.dataset.qty);
+                selectedPrice = parseInt(plan.dataset.price);
+                document.getElementById('totalValue').innerText = `R$ ${selectedPrice},00`;
+                const precoUnit = (selectedPrice / selectedQty).toFixed(2);
+                document.getElementById('qtyInfo').innerText = `${selectedQty} acessos · R$ ${precoUnit} por acesso`;
+            });
+        });
+        
+        updatePreview();
+        
+        // Carregar dados salvos
+        const saved = localStorage.getItem('labaccess_empresa');
+        if(saved) {
+            const data = JSON.parse(saved);
+            if(data.empresa) document.getElementById('empresa').value = data.empresa;
+            if(data.cnpj) document.getElementById('cnpj').value = data.cnpj;
+        }
+        
+        window.addEventListener('beforeunload', () => {
+            localStorage.setItem('labaccess_empresa', JSON.stringify({
+                empresa: document.getElementById('empresa').value,
+                cnpj: document.getElementById('cnpj').value
+            }));
+        });
+    });
+    
+    // Gerar conteúdo do QR com assinatura de segurança
+    function generateQRContent() {
+        const data = {
+            tipo: 'labaccess_v1',
+            id: Date.now().toString(36) + Math.random().toString(36).substr(2, 4),
+            empresa: document.getElementById('empresa').value || 'Empresa',
+            nome: document.getElementById('nome').value || 'Colaborador',
+            funcao: document.getElementById('funcao').value || 'Função',
+            matricula: document.getElementById('matricula').value || 'ID',
+            perfil: document.getElementById('perfil').value,
+            validade: document.getElementById('dataValidade').value,
+            timestamp: new Date().toISOString()
+        };
+        
+        // Hash simples para validação
+        const str = JSON.stringify(data);
+        let hash = 0;
+        for(let i = 0; i < str.length; i++) {
+            hash = ((hash << 5) - hash) + str.charCodeAt(i);
+            hash |= 0;
+        }
+        data.checksum = Math.abs(hash).toString(36);
+        
+        return JSON.stringify(data);
+    }
+    
+    function updatePreview() {
+        const empresa = document.getElementById('empresa').value || 'Empresa';
+        const nome = document.getElementById('nome').value || 'Colaborador';
+        const funcao = document.getElementById('funcao').value || 'Função';
+        const setor = document.getElementById('setor').value;
+        const departamento = document.getElementById('departamento').value || 'Ação';
+        const matricula = document.getElementById('matricula').value || 'ID';
+        const perfil = document.getElementById('perfil').value;
+        const validade = document.getElementById('dataValidade').value;
+        
+        document.getElementById('previewEmpresa').innerText = empresa;
+        document.getElementById('previewNome').innerText = nome;
+        document.getElementById('previewFuncao').innerText = funcao;
+        document.getElementById('previewPerfil').innerText = perfil;
+        document.getElementById('previewDepto').innerText = departamento;
+        document.getElementById('previewMatricula').innerText = matricula;
+        
+        const dataFormatada = validade ? new Date(validade).toLocaleDateString('pt-BR') : '--/--/----';
+        document.getElementById('previewValidade').innerText = dataFormatada;
+        
+        // Aplicar modelo
+        const cracha = document.getElementById('crachá');
+        if(selectedModel === 'modern') cracha.style.background = 'linear-gradient(135deg, #1e1b4b, #0f172a)';
+        else if(selectedModel === 'corporate') cracha.style.background = 'linear-gradient(135deg, #1e293b, #0f172a)';
+        else cracha.style.background = '#0f172a';
+    }
+    
+    function generateBadge() {
+        const content = generateQRContent();
+        currentQRContent = content;
+        
+        const container = document.getElementById('qrContainer');
+        const placeholder = document.getElementById('qrPlaceholder');
+        
+        container.innerHTML = '';
+        
+        try {
+            new QRCode(container, {
+                text: content,
+                width: 100,
+                height: 100,
+                colorDark: '#000000',
+                colorLight: '#ffffff',
+                correctLevel: QRCode.CorrectLevel.H
+            });
+            
+            placeholder.style.display = 'none';
+            container.style.display = 'block';
+            qrGenerated = true;
+            
+            const paymentBtn = document.getElementById('paymentBtn');
+            paymentBtn.disabled = false;
+            paymentBtn.innerText = `💳 PAGAR R$ ${selectedPrice},00 E LIBERAR`;
+            
+            showToast('✅ QR Code gerado! Agora finalize o pagamento.', 'success');
+        } catch(e) {
+            showToast('Erro ao gerar QR Code', 'error');
+        }
+    }
+    
+    function handlePayment() {
+        if(!qrGenerated) {
+            showToast('⚠️ Gere o QR Code primeiro!', 'warning');
+            return;
+        }
+        openModal();
+    }
+    
+    function openModal() {
+        const modal = document.getElementById('paymentModal');
+        document.getElementById('modalTotal').innerText = `R$ ${selectedPrice},00`;
+        
+        const qrDiv = document.getElementById('modalQr');
+        qrDiv.innerHTML = '';
+        const pixString = `00020126580014br.gov.bcb.pix0136contato@labriolag.com.br5204000053039865404${selectedPrice*100}5802BR5925Labriolag Holding6009SAO PAULO62260522LabAccess_${Date.now()}6304`;
+        
+        try {
+            new QRCode(qrDiv, {
+                text: pixString,
+                width: 160,
+                height: 160,
+                colorDark: '#000000',
+                colorLight: '#ffffff'
+            });
+        } catch(e) {
+            qrDiv.innerHTML = `<span style="color:#000;">Chave: contato@labriolag.com.br</span>`;
+        }
+        
+        modal.classList.add('open');
+    }
+    
+    function closeModal() {
+        document.getElementById('paymentModal').classList.remove('open');
+    }
+    
+    function simulatePayment() {
+        isPaid = true;
+        closeModal();
+        downloadBadge();
+        
+        // Registrar venda
+        const venda = {
+            data: new Date().toISOString(),
+            empresa: document.getElementById('empresa').value,
+            quantidade: selectedQty,
+            total: selectedPrice,
+            colaborador: document.getElementById('nome').value
+        };
+        const vendas = JSON.parse(localStorage.getItem('labaccess_vendas') || '[]');
+        vendas.unshift(venda);
+        localStorage.setItem('labaccess_vendas', JSON.stringify(vendas.slice(0, 50)));
+    }
+    
+    async function downloadBadge() {
+        if(!isPaid) {
+            showToast('⚠️ Pagamento pendente!', 'warning');
+            return;
+        }
+        
+        const crachaElement = document.getElementById('crachá');
+        
+        try {
+            showToast('📸 Gerando imagem...', 'info');
+            
+            const canvas = await html2canvas(crachaElement, {
+                scale: 3,
+                backgroundColor: null,
+                useCORS: true,
+                logging: false
+            });
+            
+            const link = document.createElement('a');
+            const nome = document.getElementById('nome').value || 'crachá';
+            const empresa = document.getElementById('empresa').value || 'empresa';
+            link.download = `LabAccess_${empresa}_${nome}.png`;
+            link.href = canvas.toDataURL('image/png');
+            link.click();
+            
+            showToast(`✅ Crachá liberado! ${selectedQty} acessos ativados.`, 'success');
+            
+            // Reset para novo QR
+            setTimeout(() => {
+                if(confirm('Deseja gerar outro crachá?')) {
+                    location.reload();
+                }
+            }, 2000);
+        } catch(e) {
+            showToast('Erro ao gerar imagem', 'error');
+        }
+    }
+    
+    function showToast(msg, type) {
+        const toast = document.createElement('div');
+        toast.className = 'toast';
+        toast.style.background = type === 'success' ? '#10b981' : type === 'error' ? '#ef4444' : '#f59e0b';
+        toast.innerText = msg;
+        document.body.appendChild(toast);
+        setTimeout(() => toast.remove(), 3000);
+    }
+</script>
+</body>
+</html>
