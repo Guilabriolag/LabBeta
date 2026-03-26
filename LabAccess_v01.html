@@ -3,10 +3,8 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
-    <title>LabAccess · Sistema de Controle de Acesso</title>
+    <title>LabAccess · Sistema de Controle de Acesso · Versão Gratuita</title>
     <link href="https://fonts.googleapis.com/css2?family=Inter:opsz,wght@14..32,300;14..32,400;14..32,500;14..32,600;14..32,700;14..32,800&family=JetBrains+Mono:wght@400;700&display=swap" rel="stylesheet">
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
     <style>
         * {
             margin: 0;
@@ -66,25 +64,13 @@
             color: #64748b;
             margin-left: 8px;
         }
-        .status-badge {
-            display: flex;
-            align-items: center;
-            gap: 8px;
-            background: rgba(16, 185, 129, 0.1);
-            padding: 6px 14px;
-            border-radius: 40px;
-            border: 1px solid rgba(16, 185, 129, 0.3);
-        }
-        .status-dot {
-            width: 8px;
-            height: 8px;
-            background: #10b981;
-            border-radius: 50%;
-            animation: pulse 1.5s infinite;
-        }
-        @keyframes pulse {
-            0%, 100% { opacity: 1; transform: scale(1); }
-            50% { opacity: 0.5; transform: scale(0.9); }
+        .free-badge {
+            background: rgba(239, 68, 68, 0.2);
+            border: 1px solid rgba(239, 68, 68, 0.3);
+            padding: 4px 12px;
+            border-radius: 20px;
+            font-size: 0.7rem;
+            color: #ef4444;
         }
 
         /* Container Principal */
@@ -93,7 +79,7 @@
             margin: 0 auto;
             padding: 24px;
             display: grid;
-            grid-template-columns: 1fr 420px;
+            grid-template-columns: 1fr 480px;
             gap: 24px;
         }
 
@@ -123,12 +109,12 @@
             font-size: 1.2rem;
         }
         .card-header h2 {
-            font-size: 1.1rem;
+            font-size: 1rem;
             font-weight: 600;
             color: white;
         }
         .card-header p {
-            font-size: 0.7rem;
+            font-size: 0.65rem;
             color: #94a3b8;
             margin-top: 2px;
         }
@@ -149,7 +135,7 @@
             text-transform: uppercase;
             letter-spacing: 0.5px;
         }
-        input, select {
+        input, select, textarea {
             width: 100%;
             padding: 12px 14px;
             background: rgba(0,0,0,0.4);
@@ -159,7 +145,11 @@
             font-size: 0.85rem;
             transition: all 0.2s;
         }
-        input:focus, select:focus {
+        textarea {
+            resize: vertical;
+            font-family: inherit;
+        }
+        input:focus, select:focus, textarea:focus {
             outline: none;
             border-color: #f59e0b;
             box-shadow: 0 0 0 3px rgba(245,158,11,0.1);
@@ -170,54 +160,67 @@
             gap: 12px;
         }
 
-        /* Modelos */
-        .models-grid {
-            display: grid;
-            grid-template-columns: repeat(3, 1fr);
-            gap: 12px;
-            margin-bottom: 20px;
+        /* Campo com Toggle */
+        .field-with-toggle {
+            margin-bottom: 16px;
+            background: rgba(0,0,0,0.2);
+            border-radius: 14px;
+            padding: 10px 12px;
         }
-        .model-card {
-            background: rgba(0,0,0,0.3);
-            border: 2px solid rgba(255,255,255,0.08);
-            border-radius: 16px;
-            padding: 12px;
-            text-align: center;
-            cursor: pointer;
-            transition: all 0.2s;
-        }
-        .model-card:hover, .model-card.selected {
-            border-color: #f59e0b;
-            background: rgba(245,158,11,0.1);
-            transform: translateY(-2px);
-        }
-        .model-icon { font-size: 1.5rem; margin-bottom: 6px; }
-        .model-name { color: white; font-size: 0.7rem; font-weight: 600; }
-
-        /* Cores */
-        .colors-grid {
+        .field-header {
             display: flex;
-            gap: 12px;
-            flex-wrap: wrap;
-            margin-bottom: 20px;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 8px;
         }
-        .color-option {
+        .field-header label {
+            margin-bottom: 0;
+            font-size: 0.65rem;
+        }
+        .toggle-switch {
+            position: relative;
+            display: inline-block;
             width: 40px;
-            height: 40px;
-            border-radius: 12px;
-            cursor: pointer;
-            border: 2px solid transparent;
-            transition: all 0.2s;
+            height: 20px;
         }
-        .color-option.selected {
-            border-color: white;
-            transform: scale(1.1);
+        .toggle-switch input {
+            opacity: 0;
+            width: 0;
+            height: 0;
+        }
+        .toggle-slider {
+            position: absolute;
+            cursor: pointer;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-color: #334155;
+            transition: 0.2s;
+            border-radius: 34px;
+        }
+        .toggle-slider:before {
+            position: absolute;
+            content: "";
+            height: 14px;
+            width: 14px;
+            left: 3px;
+            bottom: 3px;
+            background-color: white;
+            transition: 0.2s;
+            border-radius: 50%;
+        }
+        input:checked + .toggle-slider {
+            background: linear-gradient(135deg, #f59e0b, #ef4444);
+        }
+        input:checked + .toggle-slider:before {
+            transform: translateX(20px);
         }
 
         /* Planos */
         .plans-grid {
             display: grid;
-            grid-template-columns: repeat(3, 1fr);
+            grid-template-columns: repeat(4, 1fr);
             gap: 12px;
             margin-bottom: 20px;
         }
@@ -235,12 +238,12 @@
             background: linear-gradient(135deg, rgba(245,158,11,0.15), rgba(239,68,68,0.15));
         }
         .plan-price {
-            font-size: 1.2rem;
+            font-size: 1rem;
             font-weight: 800;
             color: #f59e0b;
         }
         .plan-qty {
-            font-size: 0.65rem;
+            font-size: 0.6rem;
             color: #94a3b8;
         }
 
@@ -258,9 +261,8 @@
             transition: all 0.2s;
             margin-top: 8px;
         }
-        .btn-primary:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 10px 25px rgba(245,158,11,0.3);
+        .btn-primary:active {
+            transform: scale(0.98);
         }
         .btn-success {
             background: linear-gradient(135deg, #10b981, #059669);
@@ -288,6 +290,7 @@
         .crachá-header {
             display: flex;
             justify-content: space-between;
+            align-items: center;
             margin-bottom: 16px;
             padding-bottom: 12px;
             border-bottom: 1px solid rgba(255,255,255,0.1);
@@ -320,7 +323,7 @@
         }
         .crachá-details {
             display: grid;
-            grid-template-columns: repeat(3, 1fr);
+            grid-template-columns: repeat(auto-fit, minmax(100px, 1fr));
             gap: 8px;
             margin-bottom: 16px;
             padding: 10px;
@@ -338,11 +341,28 @@
             font-size: 0.65rem;
             color: white;
             font-weight: 600;
+            word-break: break-word;
+        }
+        .social-links {
+            display: flex;
+            justify-content: center;
+            gap: 8px;
+            flex-wrap: wrap;
+            margin: 12px 0;
+        }
+        .social-link {
+            background: rgba(255,255,255,0.1);
+            padding: 4px 8px;
+            border-radius: 16px;
+            font-size: 0.6rem;
+            color: #94a3b8;
+            text-decoration: none;
         }
         .crachá-qr {
             display: flex;
             justify-content: center;
             margin: 12px 0;
+            min-height: 120px;
         }
         .qr-placeholder {
             width: 100px;
@@ -354,11 +374,27 @@
             justify-content: center;
             color: #666;
             font-size: 0.6rem;
+            flex-direction: column;
+            gap: 4px;
+        }
+        .qr-container {
+            display: flex;
+            justify-content: center;
+            align-items: center;
         }
         .crachá-footer {
             text-align: center;
             font-size: 0.55rem;
             color: #64748b;
+            margin-top: 8px;
+        }
+        .free-watermark {
+            text-align: center;
+            font-size: 0.6rem;
+            color: #ef4444;
+            margin-top: 8px;
+            padding-top: 8px;
+            border-top: 1px solid rgba(239,68,68,0.3);
         }
 
         /* Modal */
@@ -421,98 +457,212 @@
 </head>
 <body>
 
-<!-- Header Premium -->
 <header class="header-premium">
     <div class="header-content">
         <div class="logo-area">
             <div class="logo-icon">⚡</div>
             <div class="logo-text">Lab<span>Access</span></div>
-            <div class="logo-sub">QR Control System</div>
+            <div class="logo-sub">Free Trial</div>
         </div>
-        <div class="status-badge">
-            <div class="status-dot"></div>
-            <span>Online · Pronto para uso</span>
-        </div>
+        <div class="free-badge">🎫 VERSÃO GRATUITA · SEM LASTRO</div>
     </div>
 </header>
 
 <div class="main-container">
-    <!-- Painel Esquerdo: Criação -->
+    <!-- Painel Esquerdo: Cadastro Completo -->
     <div class="card-premium">
         <div class="card-header">
-            <div class="card-header-icon">🎫</div>
+            <div class="card-header-icon">📝</div>
             <div>
-                <h2>Gerar Crachá de Acesso</h2>
-                <p>Preencha os dados e gere o QR Code</p>
+                <h2>Perfil Completo</h2>
+                <p>Preencha os dados - selecione o que vai no crachá</p>
             </div>
         </div>
         <div class="card-body">
-            <!-- Modelo -->
-            <label>🎨 Modelo</label>
-            <div class="models-grid" id="modelsGrid">
-                <div class="model-card" data-model="modern">
-                    <div class="model-icon">✨</div>
-                    <div class="model-name">Moderno</div>
+            <!-- Nome com toggle -->
+            <div class="field-with-toggle">
+                <div class="field-header">
+                    <label>👤 Nome Completo</label>
+                    <label class="toggle-switch">
+                        <input type="checkbox" id="show_nome" checked onchange="updatePreview()">
+                        <span class="toggle-slider"></span>
+                    </label>
                 </div>
-                <div class="model-card selected" data-model="corporate">
-                    <div class="model-icon">💼</div>
-                    <div class="model-name">Corporativo</div>
+                <input type="text" id="nome" placeholder="Nome completo" value="Carlos Eduardo Silva" oninput="updatePreview()">
+            </div>
+
+            <div class="row-2">
+                <div class="field-with-toggle">
+                    <div class="field-header">
+                        <label>🏢 Empresa</label>
+                        <label class="toggle-switch">
+                            <input type="checkbox" id="show_empresa" checked onchange="updatePreview()">
+                            <span class="toggle-slider"></span>
+                        </label>
+                    </div>
+                    <input type="text" id="empresa" placeholder="Empresa" value="Labriolag Holding" oninput="updatePreview()">
                 </div>
-                <div class="model-card" data-model="minimal">
-                    <div class="model-icon">🎯</div>
-                    <div class="model-name">Minimalista</div>
+                <div class="field-with-toggle">
+                    <div class="field-header">
+                        <label>💼 Cargo/Função</label>
+                        <label class="toggle-switch">
+                            <input type="checkbox" id="show_cargo" checked onchange="updatePreview()">
+                            <span class="toggle-slider"></span>
+                        </label>
+                    </div>
+                    <input type="text" id="cargo" placeholder="Cargo" value="Coordenador de Operações" oninput="updatePreview()">
                 </div>
             </div>
 
-            <!-- Dados Empresa -->
-            <label>🏢 Dados da Empresa</label>
-            <input type="text" id="empresa" placeholder="Nome da Empresa" value="Labriolag Holding">
             <div class="row-2">
-                <input type="text" id="cnpj" placeholder="CNPJ">
-                <select id="setor">
-                    <option>Tecnologia</option>
-                    <option>Comércio</option>
-                    <option>Serviços</option>
-                    <option>Educação</option>
-                </select>
+                <div class="field-with-toggle">
+                    <div class="field-header">
+                        <label>🆔 Matrícula/ID</label>
+                        <label class="toggle-switch">
+                            <input type="checkbox" id="show_matricula" checked onchange="updatePreview()">
+                            <span class="toggle-slider"></span>
+                        </label>
+                    </div>
+                    <input type="text" id="matricula" placeholder="Matrícula" value="LAB-2024-001" oninput="updatePreview()">
+                </div>
+                <div class="field-with-toggle">
+                    <div class="field-header">
+                        <label>📋 Departamento</label>
+                        <label class="toggle-switch">
+                            <input type="checkbox" id="show_departamento" checked onchange="updatePreview()">
+                            <span class="toggle-slider"></span>
+                        </label>
+                    </div>
+                    <input type="text" id="departamento" placeholder="Departamento" value="Tecnologia & Inovação" oninput="updatePreview()">
+                </div>
             </div>
 
-            <!-- Dados Colaborador -->
-            <label>👤 Colaborador</label>
-            <input type="text" id="nome" placeholder="Nome Completo" value="Carlos Eduardo">
             <div class="row-2">
-                <input type="text" id="funcao" placeholder="Cargo" value="Coordenador">
-                <input type="text" id="departamento" placeholder="Departamento" value="Operações">
-            </div>
-            <div class="row-2">
-                <input type="text" id="matricula" placeholder="Matrícula" value="LAB-001">
-                <select id="perfil">
-                    <option>Administrador</option>
-                    <option>Gerente</option>
-                    <option selected>Operador</option>
-                    <option>Visitante</option>
-                </select>
+                <div class="field-with-toggle">
+                    <div class="field-header">
+                        <label>👔 Perfil de Acesso</label>
+                        <label class="toggle-switch">
+                            <input type="checkbox" id="show_perfil" checked onchange="updatePreview()">
+                            <span class="toggle-slider"></span>
+                        </label>
+                    </div>
+                    <select id="perfil" onchange="updatePreview()">
+                        <option>Administrador</option>
+                        <option>Gerente</option>
+                        <option selected>Operador</option>
+                        <option>Visitante</option>
+                        <option>Consultor</option>
+                    </select>
+                </div>
+                <div class="field-with-toggle">
+                    <div class="field-header">
+                        <label>📅 Validade</label>
+                        <label class="toggle-switch">
+                            <input type="checkbox" id="show_validade" checked onchange="updatePreview()">
+                            <span class="toggle-slider"></span>
+                        </label>
+                    </div>
+                    <input type="date" id="validade" onchange="updatePreview()">
+                </div>
             </div>
 
-            <!-- Validade -->
-            <label>📅 Validade</label>
+            <!-- Redes Sociais -->
+            <div style="margin: 12px 0 4px 0;">
+                <label>🔗 LINKS E CONTATOS</label>
+            </div>
+
             <div class="row-2">
-                <input type="date" id="dataEmissao">
-                <input type="date" id="dataValidade">
+                <div class="field-with-toggle">
+                    <div class="field-header">
+                        <label>📸 Foto (URL)</label>
+                        <label class="toggle-switch">
+                            <input type="checkbox" id="show_foto" onchange="updatePreview()">
+                            <span class="toggle-slider"></span>
+                        </label>
+                    </div>
+                    <input type="url" id="foto_url" placeholder="https://exemplo.com/foto.jpg" oninput="updatePreview()">
+                </div>
+                <div class="field-with-toggle">
+                    <div class="field-header">
+                        <label>🌐 Site/Link</label>
+                        <label class="toggle-switch">
+                            <input type="checkbox" id="show_site" onchange="updatePreview()">
+                            <span class="toggle-slider"></span>
+                        </label>
+                    </div>
+                    <input type="url" id="site" placeholder="https://seusite.com" oninput="updatePreview()">
+                </div>
+            </div>
+
+            <div class="row-2">
+                <div class="field-with-toggle">
+                    <div class="field-header">
+                        <label>💼 LinkedIn</label>
+                        <label class="toggle-switch">
+                            <input type="checkbox" id="show_linkedin" onchange="updatePreview()">
+                            <span class="toggle-slider"></span>
+                        </label>
+                    </div>
+                    <input type="url" id="linkedin" placeholder="https://linkedin.com/in/..." oninput="updatePreview()">
+                </div>
+                <div class="field-with-toggle">
+                    <div class="field-header">
+                        <label>📷 Instagram</label>
+                        <label class="toggle-switch">
+                            <input type="checkbox" id="show_instagram" onchange="updatePreview()">
+                            <span class="toggle-slider"></span>
+                        </label>
+                    </div>
+                    <input type="text" id="instagram" placeholder="@username" oninput="updatePreview()">
+                </div>
+            </div>
+
+            <div class="row-2">
+                <div class="field-with-toggle">
+                    <div class="field-header">
+                        <label>📱 WhatsApp</label>
+                        <label class="toggle-switch">
+                            <input type="checkbox" id="show_whatsapp" onchange="updatePreview()">
+                            <span class="toggle-slider"></span>
+                        </label>
+                    </div>
+                    <input type="tel" id="whatsapp" placeholder="(11) 99999-9999" oninput="updatePreview()">
+                </div>
+                <div class="field-with-toggle">
+                    <div class="field-header">
+                        <label>📧 Email</label>
+                        <label class="toggle-switch">
+                            <input type="checkbox" id="show_email" onchange="updatePreview()">
+                            <span class="toggle-slider"></span>
+                        </label>
+                    </div>
+                    <input type="email" id="email" placeholder="contato@email.com" oninput="updatePreview()">
+                </div>
+            </div>
+
+            <div class="field-with-toggle">
+                <div class="field-header">
+                    <label>🔒 Observações Internas</label>
+                    <label class="toggle-switch">
+                        <input type="checkbox" id="show_obs" onchange="updatePreview()">
+                        <span class="toggle-slider"></span>
+                    </label>
+                </div>
+                <textarea id="observacoes" rows="2" placeholder="Informações internas (vai no QR)" oninput="updatePreview()"></textarea>
             </div>
 
             <!-- Cor -->
             <label>🎨 Cor do Destaque</label>
-            <div class="colors-grid" id="colorsGrid">
-                <div class="color-option" style="background: #f59e0b;" data-color="#f59e0b"></div>
-                <div class="color-option selected" style="background: #3b82f6;" data-color="#3b82f6"></div>
-                <div class="color-option" style="background: #ef4444;" data-color="#ef4444"></div>
-                <div class="color-option" style="background: #10b981;" data-color="#10b981"></div>
-                <div class="color-option" style="background: #8b5cf6;" data-color="#8b5cf6"></div>
+            <div style="display: flex; gap: 12px; margin-bottom: 20px; flex-wrap: wrap;">
+                <div style="background: #f59e0b; width: 40px; height: 40px; border-radius: 12px; cursor: pointer; border: 2px solid transparent;" onclick="setColor('#f59e0b')" id="color-f59e0b"></div>
+                <div style="background: #3b82f6; width: 40px; height: 40px; border-radius: 12px; cursor: pointer; border: 2px solid white;" onclick="setColor('#3b82f6')" id="color-3b82f6"></div>
+                <div style="background: #ef4444; width: 40px; height: 40px; border-radius: 12px; cursor: pointer;" onclick="setColor('#ef4444')" id="color-ef4444"></div>
+                <div style="background: #10b981; width: 40px; height: 40px; border-radius: 12px; cursor: pointer;" onclick="setColor('#10b981')" id="color-10b981"></div>
+                <div style="background: #8b5cf6; width: 40px; height: 40px; border-radius: 12px; cursor: pointer;" onclick="setColor('#8b5cf6')" id="color-8b5cf6"></div>
             </div>
 
             <!-- Planos -->
-            <label>💰 Escolha seu Plano</label>
+            <label>💰 Planos de Acesso (Simulação)</label>
             <div class="plans-grid" id="plansGrid">
                 <div class="plan-card" data-qty="20" data-price="29">
                     <div class="plan-price">R$ 29</div>
@@ -522,21 +672,25 @@
                     <div class="plan-price">R$ 79</div>
                     <div class="plan-qty">60 acessos</div>
                 </div>
-                <div class="plan-card" data-qty="150" data-price="149">
-                    <div class="plan-price">R$ 149</div>
-                    <div class="plan-qty">150 acessos</div>
+                <div class="plan-card" data-qty="100" data-price="129">
+                    <div class="plan-price">R$ 129</div>
+                    <div class="plan-qty">100 acessos</div>
+                </div>
+                <div class="plan-card" data-qty="200" data-price="199">
+                    <div class="plan-price">R$ 199</div>
+                    <div class="plan-qty">200 acessos</div>
                 </div>
             </div>
 
-            <button class="btn-primary" onclick="generateBadge()">⚡ GERAR QR CODE DE ACESSO</button>
+            <button class="btn-primary" id="generateBtn" onclick="generateBadge()">⚡ GERAR QR CODE DE ACESSO</button>
         </div>
     </div>
 
-    <!-- Painel Direito: Preview + Pagamento -->
+    <!-- Painel Direito: Preview -->
     <div>
-        <div class="card-premium" style="margin-bottom: 20px;">
+        <div class="card-premium">
             <div class="card-header">
-                <div class="card-header-icon">📱</div>
+                <div class="card-header-icon">🪪</div>
                 <div>
                     <h2>Preview do Crachá</h2>
                     <p>Visualize como ficará o acesso</p>
@@ -549,63 +703,57 @@
                         <div class="crachá-badge">QR Access</div>
                     </div>
                     <div class="crachá-info">
-                        <div class="crachá-nome" id="previewNome">Carlos Eduardo</div>
-                        <div class="crachá-funcao" id="previewFuncao">Coordenador</div>
+                        <div class="crachá-nome" id="previewNome">Carlos Eduardo Silva</div>
+                        <div class="crachá-funcao" id="previewCargo">Coordenador de Operações</div>
                     </div>
-                    <div class="crachá-details">
-                        <div class="detail-item">
-                            <div class="detail-label">Perfil</div>
-                            <div class="detail-value" id="previewPerfil">Operador</div>
-                        </div>
-                        <div class="detail-item">
-                            <div class="detail-label">Depto</div>
-                            <div class="detail-value" id="previewDepto">Operações</div>
-                        </div>
-                        <div class="detail-item">
-                            <div class="detail-label">ID</div>
-                            <div class="detail-value" id="previewMatricula">LAB-001</div>
-                        </div>
-                    </div>
+                    <div id="detailsContainer" class="crachá-details"></div>
+                    <div id="socialContainer" class="social-links"></div>
                     <div class="crachá-qr">
                         <div id="qrPlaceholder" class="qr-placeholder">
                             <span>⚡ QR Code</span>
+                            <span style="font-size:0.45rem;">Clique em "GERAR QR"</span>
                         </div>
-                        <div id="qrContainer" style="display:none;"></div>
+                        <canvas id="qrCanvas" style="display: none; width: 100px; height: 100px;"></canvas>
                     </div>
                     <div class="crachá-footer">
                         <span>Válido até: <span id="previewValidade">--/--/----</span></span>
                     </div>
+                    <div class="free-watermark">
+                        ⚡ VERSÃO GRATUITA · SEM LASTRO · APENAS PARA DEMONSTRAÇÃO
+                    </div>
                 </div>
+
                 <div style="text-align: center; margin-top: 16px; padding: 12px; background: rgba(0,0,0,0.3); border-radius: 12px;">
-                    <div style="font-size: 0.7rem; color: #94a3b8;">Total do pedido</div>
+                    <div style="font-size: 0.7rem; color: #94a3b8;">Total do pedido (simulação)</div>
                     <div style="font-size: 1.5rem; font-weight: 800; color: #f59e0b;" id="totalValue">R$ 79,00</div>
                     <div style="font-size: 0.65rem; color: #64748b;" id="qtyInfo">60 acessos · R$ 1,32 por acesso</div>
                 </div>
-                <button class="btn-primary btn-success" id="paymentBtn" onclick="handlePayment()" disabled>💳 GERAR QR PRIMEIRO</button>
+
+                <button class="btn-primary btn-success" id="paymentBtn" onclick="handlePayment()" disabled>💳 SIMULAR PAGAMENTO</button>
             </div>
         </div>
 
-        <!-- Informação de Venda -->
+        <!-- Info -->
         <div class="card-premium">
             <div class="card-header">
                 <div class="card-header-icon">💡</div>
                 <div>
                     <h2>Como funciona?</h2>
-                    <p>Simples e sem mensalidade</p>
+                    <p>Versão gratuita com simulação</p>
                 </div>
             </div>
             <div class="card-body">
                 <div style="display: flex; gap: 12px; margin-bottom: 12px;">
                     <div style="width: 32px; height: 32px; background: rgba(245,158,11,0.2); border-radius: 50%; display: flex; align-items: center; justify-content: center;">1️⃣</div>
-                    <div><strong>Gere o QR Code</strong><br><span style="font-size: 0.75rem; color: #94a3b8;">Preencha os dados e gere o QR de acesso</span></div>
+                    <div><strong>Preencha os dados</strong><br><span style="font-size: 0.75rem; color: #94a3b8;">Use os toggles para escolher o que aparece</span></div>
                 </div>
                 <div style="display: flex; gap: 12px; margin-bottom: 12px;">
                     <div style="width: 32px; height: 32px; background: rgba(245,158,11,0.2); border-radius: 50%; display: flex; align-items: center; justify-content: center;">2️⃣</div>
-                    <div><strong>Escolha o plano</strong><br><span style="font-size: 0.75rem; color: #94a3b8;">Pague apenas pelos acessos que vai usar</span></div>
+                    <div><strong>Gere o QR Code</strong><br><span style="font-size: 0.75rem; color: #94a3b8;">Clique em "GERAR QR" para criar o código</span></div>
                 </div>
                 <div style="display: flex; gap: 12px;">
                     <div style="width: 32px; height: 32px; background: rgba(245,158,11,0.2); border-radius: 50%; display: flex; align-items: center; justify-content: center;">3️⃣</div>
-                    <div><strong>Baixe e use</strong><br><span style="font-size: 0.75rem; color: #94a3b8;">Imprima ou envie o QR para seus colaboradores</span></div>
+                    <div><strong>Simule o pagamento</strong><br><span style="font-size: 0.75rem; color: #94a3b8;">Modal com PIX simulado e download do crachá</span></div>
                 </div>
             </div>
         </div>
@@ -615,10 +763,11 @@
 <!-- Modal Pagamento -->
 <div id="paymentModal" class="modal">
     <div class="modal-content">
-        <h3 style="color: white;">⚡ Pagamento via PIX</h3>
+        <h3 style="color: white;">⚡ SIMULAÇÃO DE PAGAMENTO</h3>
         <div style="font-size: 2rem; font-weight: 800; color: #f59e0b; margin: 12px 0;" id="modalTotal">R$ 79,00</div>
-        <div id="modalQr" class="modal-qr"></div>
+        <div id="modalQr" style="background: white; padding: 12px; border-radius: 16px; display: inline-block; margin: 16px 0;"></div>
         <div style="font-size: 0.7rem; color: #94a3b8; margin: 12px 0;">Chave PIX: contato@labriolag.com.br</div>
+        <div style="font-size: 0.6rem; color: #ef4444; margin-bottom: 16px;">⚠️ VERSÃO GRATUITA · SIMULAÇÃO SEM LASTRO</div>
         <div style="display: flex; gap: 12px;">
             <button class="btn-primary" style="flex:1;" onclick="simulatePayment()">✅ SIMULAR PAGAMENTO</button>
             <button class="btn-primary" style="flex:1; background:#334155;" onclick="closeModal()">FECHAR</button>
@@ -626,9 +775,9 @@
     </div>
 </div>
 
+<script src="https://cdn.jsdelivr.net/npm/qrcodejs2-fix@1.0.0/qrcode.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
 <script>
-    // Estado do Sistema
-    let selectedModel = 'corporate';
     let selectedColor = '#3b82f6';
     let selectedQty = 60;
     let selectedPrice = 79;
@@ -636,88 +785,145 @@
     let qrGenerated = false;
     let currentQRContent = '';
 
-    // Inicialização
-    document.addEventListener('DOMContentLoaded', () => {
-        // Datas
-        const hoje = new Date().toISOString().split('T')[0];
-        document.getElementById('dataEmissao').value = hoje;
-        const umAno = new Date();
-        umAno.setFullYear(umAno.getFullYear() + 1);
-        document.getElementById('dataValidade').value = umAno.toISOString().split('T')[0];
+    function setColor(color) {
+        selectedColor = color;
+        document.getElementById('crachá').style.setProperty('--accent', color);
         
-        // Eventos
-        ['empresa', 'nome', 'funcao', 'departamento', 'matricula', 'perfil', 'setor', 'dataValidade'].forEach(id => {
-            const el = document.getElementById(id);
-            if(el) el.addEventListener('input', () => updatePreview());
+        // Atualizar borda das cores
+        document.querySelectorAll('[id^="color-"]').forEach(el => {
+            el.style.border = '2px solid transparent';
         });
-        
-        // Modelos
-        document.querySelectorAll('.model-card').forEach(card => {
-            card.addEventListener('click', () => {
-                document.querySelectorAll('.model-card').forEach(c => c.classList.remove('selected'));
-                card.classList.add('selected');
-                selectedModel = card.dataset.model;
-                updatePreview();
-            });
+        document.getElementById(`color-${color.replace('#', '')}`).style.border = '2px solid white';
+    }
+
+    function updatePreview() {
+        const showNome = document.getElementById('show_nome').checked;
+        const showEmpresa = document.getElementById('show_empresa').checked;
+        const showCargo = document.getElementById('show_cargo').checked;
+        const showMatricula = document.getElementById('show_matricula').checked;
+        const showDepartamento = document.getElementById('show_departamento').checked;
+        const showPerfil = document.getElementById('show_perfil').checked;
+        const showValidade = document.getElementById('show_validade').checked;
+        const showFoto = document.getElementById('show_foto').checked;
+        const showSite = document.getElementById('show_site').checked;
+        const showLinkedin = document.getElementById('show_linkedin').checked;
+        const showInstagram = document.getElementById('show_instagram').checked;
+        const showWhatsapp = document.getElementById('show_whatsapp').checked;
+        const showEmail = document.getElementById('show_email').checked;
+
+        const nome = document.getElementById('nome').value || "—";
+        const empresa = document.getElementById('empresa').value || "—";
+        const cargo = document.getElementById('cargo').value || "—";
+        const matricula = document.getElementById('matricula').value || "—";
+        const departamento = document.getElementById('departamento').value || "—";
+        const perfil = document.getElementById('perfil').value;
+        const validade = document.getElementById('validade').value;
+        const fotoUrl = document.getElementById('foto_url').value;
+        const site = document.getElementById('site').value;
+        const linkedin = document.getElementById('linkedin').value;
+        const instagram = document.getElementById('instagram').value;
+        const whatsapp = document.getElementById('whatsapp').value;
+        const email = document.getElementById('email').value;
+
+        document.getElementById('previewNome').innerText = showNome ? nome : "••••••••";
+        document.getElementById('previewEmpresa').innerText = showEmpresa ? empresa : "••••";
+        document.getElementById('previewCargo').innerText = showCargo ? cargo : "";
+
+        const detailsContainer = document.getElementById('detailsContainer');
+        detailsContainer.innerHTML = '';
+        const details = [];
+        if(showMatricula) details.push({label: "ID", value: matricula});
+        if(showDepartamento) details.push({label: "Depto", value: departamento});
+        if(showPerfil) details.push({label: "Perfil", value: perfil});
+        details.forEach(d => {
+            const div = document.createElement('div');
+            div.className = 'detail-item';
+            div.innerHTML = `<div class="detail-label">${d.label}</div><div class="detail-value">${d.value}</div>`;
+            detailsContainer.appendChild(div);
         });
-        
-        // Cores
-        document.querySelectorAll('.color-option').forEach(color => {
-            color.addEventListener('click', () => {
-                document.querySelectorAll('.color-option').forEach(c => c.classList.remove('selected'));
-                color.classList.add('selected');
-                selectedColor = color.dataset.color;
-                document.getElementById('crachá').style.setProperty('--accent', selectedColor);
-                updatePreview();
-            });
+
+        const socialContainer = document.getElementById('socialContainer');
+        socialContainer.innerHTML = '';
+        const socials = [];
+        if(showSite && site) socials.push({icon: "🌐", url: site, label: "Site"});
+        if(showLinkedin && linkedin) socials.push({icon: "💼", url: linkedin, label: "LinkedIn"});
+        if(showInstagram && instagram) socials.push({icon: "📷", url: `https://instagram.com/${instagram.replace('@','')}`, label: "Instagram"});
+        if(showWhatsapp && whatsapp) socials.push({icon: "📱", url: `https://wa.me/55${whatsapp.replace(/\D/g,'')}`, label: "WhatsApp"});
+        if(showEmail && email) socials.push({icon: "✉️", url: `mailto:${email}`, label: "Email"});
+        socials.forEach(s => {
+            const a = document.createElement('a');
+            a.href = s.url;
+            a.target = "_blank";
+            a.className = 'social-link';
+            a.innerHTML = `${s.icon} ${s.label}`;
+            socialContainer.appendChild(a);
         });
+
+        const dataFormatada = validade ? new Date(validade).toLocaleDateString('pt-BR') : '--/--/----';
+        document.getElementById('previewValidade').innerText = showValidade ? dataFormatada : "••••••";
         
-        // Planos
-        document.querySelectorAll('.plan-card').forEach(plan => {
-            plan.addEventListener('click', () => {
-                document.querySelectorAll('.plan-card').forEach(p => p.classList.remove('selected'));
-                plan.classList.add('selected');
-                selectedQty = parseInt(plan.dataset.qty);
-                selectedPrice = parseInt(plan.dataset.price);
-                document.getElementById('totalValue').innerText = `R$ ${selectedPrice},00`;
-                const precoUnit = (selectedPrice / selectedQty).toFixed(2);
-                document.getElementById('qtyInfo').innerText = `${selectedQty} acessos · R$ ${precoUnit} por acesso`;
-            });
-        });
-        
-        updatePreview();
-        
-        // Carregar dados salvos
-        const saved = localStorage.getItem('labaccess_empresa');
-        if(saved) {
-            const data = JSON.parse(saved);
-            if(data.empresa) document.getElementById('empresa').value = data.empresa;
-            if(data.cnpj) document.getElementById('cnpj').value = data.cnpj;
+        // Foto (opcional)
+        const fotoElement = document.querySelector('.crachá-photo');
+        if(showFoto && fotoUrl && !fotoElement) {
+            const header = document.querySelector('.crachá-header');
+            const img = document.createElement('img');
+            img.className = 'crachá-photo';
+            img.src = fotoUrl;
+            header.appendChild(img);
+        } else if(fotoElement && (!showFoto || !fotoUrl)) {
+            fotoElement.remove();
+        } else if(fotoElement && showFoto && fotoUrl) {
+            fotoElement.src = fotoUrl;
         }
-        
-        window.addEventListener('beforeunload', () => {
-            localStorage.setItem('labaccess_empresa', JSON.stringify({
-                empresa: document.getElementById('empresa').value,
-                cnpj: document.getElementById('cnpj').value
-            }));
+    }
+
+    function generateQRCode(text, canvasId) {
+        return new Promise((resolve, reject) => {
+            const canvas = document.getElementById(canvasId);
+            if(!canvas) {
+                reject(new Error('Canvas não encontrado'));
+                return;
+            }
+            
+            canvas.width = 100;
+            canvas.height = 100;
+            const ctx = canvas.getContext('2d');
+            
+            // Usar API de QR Code via imagem (fallback)
+            const qrUrl = `https://api.qrserver.com/v1/create-qr-code/?size=100x100&data=${encodeURIComponent(text)}`;
+            const img = new Image();
+            img.crossOrigin = "Anonymous";
+            img.onload = () => {
+                ctx.fillStyle = '#ffffff';
+                ctx.fillRect(0, 0, canvas.width, canvas.height);
+                ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
+                resolve(canvas);
+            };
+            img.onerror = () => reject(new Error('Erro ao gerar QR Code'));
+            img.src = qrUrl;
         });
-    });
-    
-    // Gerar conteúdo do QR com assinatura de segurança
+    }
+
     function generateQRContent() {
         const data = {
-            tipo: 'labaccess_v1',
+            tipo: 'labaccess_free_v1',
             id: Date.now().toString(36) + Math.random().toString(36).substr(2, 4),
             empresa: document.getElementById('empresa').value || 'Empresa',
             nome: document.getElementById('nome').value || 'Colaborador',
-            funcao: document.getElementById('funcao').value || 'Função',
+            cargo: document.getElementById('cargo').value || 'Cargo',
             matricula: document.getElementById('matricula').value || 'ID',
+            departamento: document.getElementById('departamento').value || 'Depto',
             perfil: document.getElementById('perfil').value,
-            validade: document.getElementById('dataValidade').value,
-            timestamp: new Date().toISOString()
+            validade: document.getElementById('validade').value,
+            site: document.getElementById('site').value,
+            linkedin: document.getElementById('linkedin').value,
+            instagram: document.getElementById('instagram').value,
+            whatsapp: document.getElementById('whatsapp').value,
+            email: document.getElementById('email').value,
+            observacoes: document.getElementById('observacoes').value,
+            timestamp: new Date().toISOString(),
+            free_version: true
         };
-        
-        // Hash simples para validação
         const str = JSON.stringify(data);
         let hash = 0;
         for(let i = 0; i < str.length; i++) {
@@ -725,70 +931,36 @@
             hash |= 0;
         }
         data.checksum = Math.abs(hash).toString(36);
-        
         return JSON.stringify(data);
     }
-    
-    function updatePreview() {
-        const empresa = document.getElementById('empresa').value || 'Empresa';
-        const nome = document.getElementById('nome').value || 'Colaborador';
-        const funcao = document.getElementById('funcao').value || 'Função';
-        const setor = document.getElementById('setor').value;
-        const departamento = document.getElementById('departamento').value || 'Ação';
-        const matricula = document.getElementById('matricula').value || 'ID';
-        const perfil = document.getElementById('perfil').value;
-        const validade = document.getElementById('dataValidade').value;
-        
-        document.getElementById('previewEmpresa').innerText = empresa;
-        document.getElementById('previewNome').innerText = nome;
-        document.getElementById('previewFuncao').innerText = funcao;
-        document.getElementById('previewPerfil').innerText = perfil;
-        document.getElementById('previewDepto').innerText = departamento;
-        document.getElementById('previewMatricula').innerText = matricula;
-        
-        const dataFormatada = validade ? new Date(validade).toLocaleDateString('pt-BR') : '--/--/----';
-        document.getElementById('previewValidade').innerText = dataFormatada;
-        
-        // Aplicar modelo
-        const cracha = document.getElementById('crachá');
-        if(selectedModel === 'modern') cracha.style.background = 'linear-gradient(135deg, #1e1b4b, #0f172a)';
-        else if(selectedModel === 'corporate') cracha.style.background = 'linear-gradient(135deg, #1e293b, #0f172a)';
-        else cracha.style.background = '#0f172a';
-    }
-    
-    function generateBadge() {
+
+    async function generateBadge() {
         const content = generateQRContent();
         currentQRContent = content;
         
-        const container = document.getElementById('qrContainer');
         const placeholder = document.getElementById('qrPlaceholder');
+        const canvas = document.getElementById('qrCanvas');
         
-        container.innerHTML = '';
+        placeholder.style.display = 'flex';
+        canvas.style.display = 'none';
         
         try {
-            new QRCode(container, {
-                text: content,
-                width: 100,
-                height: 100,
-                colorDark: '#000000',
-                colorLight: '#ffffff',
-                correctLevel: QRCode.CorrectLevel.H
-            });
-            
+            await generateQRCode(content, 'qrCanvas');
             placeholder.style.display = 'none';
-            container.style.display = 'block';
+            canvas.style.display = 'block';
             qrGenerated = true;
             
             const paymentBtn = document.getElementById('paymentBtn');
             paymentBtn.disabled = false;
-            paymentBtn.innerText = `💳 PAGAR R$ ${selectedPrice},00 E LIBERAR`;
+            paymentBtn.innerText = `💳 SIMULAR PAGAMENTO R$ ${selectedPrice},00`;
             
-            showToast('✅ QR Code gerado! Agora finalize o pagamento.', 'success');
+            showToast('✅ QR Code gerado! Agora simule o pagamento.', 'success');
         } catch(e) {
-            showToast('Erro ao gerar QR Code', 'error');
+            console.error('Erro ao gerar QR:', e);
+            showToast('Erro ao gerar QR Code. Tente novamente.', 'error');
         }
     }
-    
+
     function handlePayment() {
         if(!qrGenerated) {
             showToast('⚠️ Gere o QR Code primeiro!', 'warning');
@@ -796,7 +968,7 @@
         }
         openModal();
     }
-    
+
     function openModal() {
         const modal = document.getElementById('paymentModal');
         document.getElementById('modalTotal').innerText = `R$ ${selectedPrice},00`;
@@ -805,46 +977,42 @@
         qrDiv.innerHTML = '';
         const pixString = `00020126580014br.gov.bcb.pix0136contato@labriolag.com.br5204000053039865404${selectedPrice*100}5802BR5925Labriolag Holding6009SAO PAULO62260522LabAccess_${Date.now()}6304`;
         
-        try {
-            new QRCode(qrDiv, {
-                text: pixString,
-                width: 160,
-                height: 160,
-                colorDark: '#000000',
-                colorLight: '#ffffff'
-            });
-        } catch(e) {
-            qrDiv.innerHTML = `<span style="color:#000;">Chave: contato@labriolag.com.br</span>`;
-        }
+        // Gerar QR do PIX
+        const qrUrl = `https://api.qrserver.com/v1/create-qr-code/?size=160x160&data=${encodeURIComponent(pixString)}`;
+        const img = document.createElement('img');
+        img.src = qrUrl;
+        img.style.width = '160px';
+        img.style.height = '160px';
+        qrDiv.appendChild(img);
         
         modal.classList.add('open');
     }
-    
+
     function closeModal() {
         document.getElementById('paymentModal').classList.remove('open');
     }
-    
+
     function simulatePayment() {
         isPaid = true;
         closeModal();
         downloadBadge();
         
-        // Registrar venda
         const venda = {
             data: new Date().toISOString(),
             empresa: document.getElementById('empresa').value,
             quantidade: selectedQty,
             total: selectedPrice,
-            colaborador: document.getElementById('nome').value
+            colaborador: document.getElementById('nome').value,
+            free_version: true
         };
         const vendas = JSON.parse(localStorage.getItem('labaccess_vendas') || '[]');
         vendas.unshift(venda);
         localStorage.setItem('labaccess_vendas', JSON.stringify(vendas.slice(0, 50)));
     }
-    
+
     async function downloadBadge() {
         if(!isPaid) {
-            showToast('⚠️ Pagamento pendente!', 'warning');
+            showToast('⚠️ Simule o pagamento primeiro!', 'warning');
             return;
         }
         
@@ -863,23 +1031,17 @@
             const link = document.createElement('a');
             const nome = document.getElementById('nome').value || 'crachá';
             const empresa = document.getElementById('empresa').value || 'empresa';
-            link.download = `LabAccess_${empresa}_${nome}.png`;
+            link.download = `LabAccess_Free_${empresa}_${nome}.png`;
             link.href = canvas.toDataURL('image/png');
             link.click();
             
-            showToast(`✅ Crachá liberado! ${selectedQty} acessos ativados.`, 'success');
-            
-            // Reset para novo QR
-            setTimeout(() => {
-                if(confirm('Deseja gerar outro crachá?')) {
-                    location.reload();
-                }
-            }, 2000);
+            showToast(`✅ Crachá baixado! Versão gratuita - sem lastro financeiro.`, 'success');
         } catch(e) {
+            console.error(e);
             showToast('Erro ao gerar imagem', 'error');
         }
     }
-    
+
     function showToast(msg, type) {
         const toast = document.createElement('div');
         toast.className = 'toast';
@@ -888,6 +1050,38 @@
         document.body.appendChild(toast);
         setTimeout(() => toast.remove(), 3000);
     }
+
+    document.addEventListener('DOMContentLoaded', () => {
+        const umAno = new Date();
+        umAno.setFullYear(umAno.getFullYear() + 1);
+        document.getElementById('validade').value = umAno.toISOString().split('T')[0];
+        
+        document.querySelectorAll('.plan-card').forEach(plan => {
+            plan.addEventListener('click', () => {
+                document.querySelectorAll('.plan-card').forEach(p => p.classList.remove('selected'));
+                plan.classList.add('selected');
+                selectedQty = parseInt(plan.dataset.qty);
+                selectedPrice = parseInt(plan.dataset.price);
+                document.getElementById('totalValue').innerText = `R$ ${selectedPrice},00`;
+                const precoUnit = (selectedPrice / selectedQty).toFixed(2);
+                document.getElementById('qtyInfo').innerText = `${selectedQty} acessos · R$ ${precoUnit} por acesso`;
+            });
+        });
+        
+        updatePreview();
+        
+        const saved = localStorage.getItem('labaccess_empresa');
+        if(saved) {
+            const data = JSON.parse(saved);
+            if(data.empresa) document.getElementById('empresa').value = data.empresa;
+        }
+        
+        window.addEventListener('beforeunload', () => {
+            localStorage.setItem('labaccess_empresa', JSON.stringify({
+                empresa: document.getElementById('empresa').value
+            }));
+        });
+    });
 </script>
 </body>
-</html>
+                                </html>
